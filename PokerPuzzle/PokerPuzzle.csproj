@@ -1,0 +1,103 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Ressources\Actions\allin.png" />
+    <None Remove="Ressources\Actions\bet.png" />
+    <None Remove="Ressources\Actions\call.png" />
+    <None Remove="Ressources\Actions\check.png" />
+    <None Remove="Ressources\Actions\fold.png" />
+    <None Remove="Ressources\Actions\raise.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Ressources\Data\data.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\PokerPuzzleData\PokerPuzzleData.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Ressources\Actions\allin.png" />
+    <Resource Include="Ressources\Actions\bet.png" />
+    <Resource Include="Ressources\Actions\call.png" />
+    <Resource Include="Ressources\Actions\check.png" />
+    <Resource Include="Ressources\Actions\fold.png" />
+    <Resource Include="Ressources\Actions\raise.png" />
+    <Resource Include="Ressources\button.png" />
+    <Resource Include="Ressources\Cards\10_of_clubs.png" />
+    <Resource Include="Ressources\Cards\10_of_diamonds.png" />
+    <Resource Include="Ressources\Cards\10_of_hearts.png" />
+    <Resource Include="Ressources\Cards\10_of_spades.png" />
+    <Resource Include="Ressources\Cards\2_of_clubs.png" />
+    <Resource Include="Ressources\Cards\2_of_diamonds.png" />
+    <Resource Include="Ressources\Cards\2_of_hearts.png" />
+    <Resource Include="Ressources\Cards\2_of_spades.png" />
+    <Resource Include="Ressources\Cards\3_of_clubs.png" />
+    <Resource Include="Ressources\Cards\3_of_diamonds.png" />
+    <Resource Include="Ressources\Cards\3_of_hearts.png" />
+    <Resource Include="Ressources\Cards\3_of_spades.png" />
+    <Resource Include="Ressources\Cards\4_of_clubs.png" />
+    <Resource Include="Ressources\Cards\4_of_diamonds.png" />
+    <Resource Include="Ressources\Cards\4_of_hearts.png" />
+    <Resource Include="Ressources\Cards\4_of_spades.png" />
+    <Resource Include="Ressources\Cards\5_of_clubs.png" />
+    <Resource Include="Ressources\Cards\5_of_diamonds.png" />
+    <Resource Include="Ressources\Cards\5_of_hearts.png" />
+    <Resource Include="Ressources\Cards\5_of_spades.png" />
+    <Resource Include="Ressources\Cards\6_of_clubs.png" />
+    <Resource Include="Ressources\Cards\6_of_diamonds.png" />
+    <Resource Include="Ressources\Cards\6_of_hearts.png" />
+    <Resource Include="Ressources\Cards\6_of_spades.png" />
+    <Resource Include="Ressources\Cards\7_of_clubs.png" />
+    <Resource Include="Ressources\Cards\7_of_diamonds.png" />
+    <Resource Include="Ressources\Cards\7_of_hearts.png" />
+    <Resource Include="Ressources\Cards\7_of_spades.png" />
+    <Resource Include="Ressources\Cards\8_of_clubs.png" />
+    <Resource Include="Ressources\Cards\8_of_diamonds.png" />
+    <Resource Include="Ressources\Cards\8_of_hearts.png" />
+    <Resource Include="Ressources\Cards\8_of_spades.png" />
+    <Resource Include="Ressources\Cards\9_of_clubs.png" />
+    <Resource Include="Ressources\Cards\9_of_diamonds.png" />
+    <Resource Include="Ressources\Cards\9_of_hearts.png" />
+    <Resource Include="Ressources\Cards\9_of_spades.png" />
+    <Resource Include="Ressources\Cards\ace_of_clubs.png" />
+    <Resource Include="Ressources\Cards\ace_of_diamonds.png" />
+    <Resource Include="Ressources\Cards\ace_of_hearts.png" />
+    <Resource Include="Ressources\Cards\ace_of_spades.png" />
+    <Resource Include="Ressources\Cards\ace_of_spades2.png" />
+    <Resource Include="Ressources\Cards\card_back.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Ressources\Cards\jack_of_clubs.png" />
+    <Resource Include="Ressources\Cards\jack_of_diamonds.png" />
+    <Resource Include="Ressources\Cards\jack_of_hearts.png" />
+    <Resource Include="Ressources\Cards\jack_of_spades.png" />
+    <Resource Include="Ressources\Cards\king_of_clubs.png" />
+    <Resource Include="Ressources\Cards\king_of_diamonds.png" />
+    <Resource Include="Ressources\Cards\king_of_hearts.png" />
+    <Resource Include="Ressources\Cards\king_of_spades.png" />
+    <Resource Include="Ressources\Cards\queen_of_clubs.png" />
+    <Resource Include="Ressources\Cards\queen_of_diamonds.png" />
+    <Resource Include="Ressources\Cards\queen_of_hearts.png" />
+    <Resource Include="Ressources\Cards\queen_of_spades.png" />
+    <Resource Include="Ressources\table.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="MainWindow.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+
+</Project>
