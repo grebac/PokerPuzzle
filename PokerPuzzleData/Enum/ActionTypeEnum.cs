@@ -19,9 +19,11 @@ namespace PokerPuzzleData.Enum
         Check,
         [Description("pack://application:,,,/Ressources/Actions/raise.png")]
         Raise,
+        [Description("")]
         Nothing,
         [Description("pack://application:,,,/Ressources/Actions/allin.png")]
-        Allin
+        Allin,
+        StreetEnd
     }
 
     public static class ActionTypeHelper

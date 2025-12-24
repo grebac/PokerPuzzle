@@ -48,7 +48,7 @@ namespace PokerPuzzleData.DTO
         [CardCode("9c")]
         NineOfClubs,
         [Description("pack://application:,,,/Ressources/Cards/10_of_clubs.png")]
-        [CardCode("10c")]
+        [CardCode("Tc")]
         TenOfClubs,
         [Description("pack://application:,,,/Ressources/Cards/jack_of_clubs.png")]
         [CardCode("Jc")]
@@ -89,7 +89,7 @@ namespace PokerPuzzleData.DTO
         [CardCode("9d")]
         NineOfDiamonds,
         [Description("pack://application:,,,/Ressources/Cards/10_of_diamonds.png")]
-        [CardCode("10d")]
+        [CardCode("Td")]
         TenOfDiamonds,
         [Description("pack://application:,,,/Ressources/Cards/jack_of_diamonds.png")]
         [CardCode("Jd")]
@@ -130,7 +130,7 @@ namespace PokerPuzzleData.DTO
         [CardCode("9h")]
         NineOfHearts,
         [Description("pack://application:,,,/Ressources/Cards/10_of_hearts.png")]
-        [CardCode("10h")]
+        [CardCode("Th")]
         TenOfHearts,
         [Description("pack://application:,,,/Ressources/Cards/jack_of_hearts.png")]
         [CardCode("Jh")]
@@ -171,7 +171,7 @@ namespace PokerPuzzleData.DTO
         [CardCode("9s")]
         NineOfSpades,
         [Description("pack://application:,,,/Ressources/Cards/10_of_spades.png")]
-        [CardCode("10s")]
+        [CardCode("Ts")]
         TenOfSpades,
         [Description("pack://application:,,,/Ressources/Cards/jack_of_spades.png")]
         [CardCode("Js")]

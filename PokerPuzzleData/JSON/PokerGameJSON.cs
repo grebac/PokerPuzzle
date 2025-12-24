@@ -32,7 +32,7 @@ namespace PokerPuzzleData.JSON
         }
 
         public Dictionary<StreetEnum, int> ParseStreetPots() {
-            Dictionary<StreetEnum, int> streetPots = new Dictionary<StreetEnum, int>();
+            Dictionary<StreetEnum, int> streetPots = new Dictionary<StreetEnum, int>() { {StreetEnum.Preflop, 0 } };
 
             foreach (var streetPot in StreetPotJSONs) {
                 StreetEnum street = StreetHelper.ParseStreet(streetPot.Street);
@@ -100,7 +100,6 @@ namespace PokerPuzzleData.JSON
 
                         actions.Add(new GameActionDTO(
                             playerPosition,
-                            "default",
                             StreetHelper.ParseStreet(street),
                             action,
                             index++
@@ -109,6 +108,14 @@ namespace PokerPuzzleData.JSON
                         actionsRemaining = true;
                     }
                 }
+
+                // Add a "end of street" action
+                actions.Add(new GameActionDTO(
+                    playerPosition: -1,
+                    street: StreetHelper.ParseStreet(street)+1,
+                    action: ActionTypeEnum.StreetEnd,
+                    orderIndex: index++
+                ));
             }
 
             return actions;
