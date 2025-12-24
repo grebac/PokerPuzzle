@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:PokerPuzzle.View"
              xmlns:VM="clr-namespace:PokerPuzzle.VM"
              mc:Ignorable="d"
-             Height="300" Width="1000"
+             Height="400" Width="1000"
              d:DataContext="{d:DesignInstance Type=VM:CommunityCardsVM}">
     <Grid>
         <Grid.ColumnDefinitions>
@@ -14,6 +14,10 @@
             <ColumnDefinition Width="*"></ColumnDefinition>
             <ColumnDefinition Width="*"></ColumnDefinition>
         </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="5*"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"></ColumnDefinition>
@@ -35,6 +39,31 @@
         </Border>
         <Border BorderThickness="15" Grid.Column="2">
             <Image x:Name="River" Source="{Binding RiverPath, Mode=OneWay}" Visibility="{Binding IsRiverVisible}"/>
+        </Border>
+
+        <!-- Pot Display -->
+        <Border Background="#1B4D1B" 
+        BorderBrush="#8B7355" 
+        BorderThickness="2" 
+        CornerRadius="5"
+        Padding="16,4"
+        Margin="418,10,82,10"
+        Opacity="0.95"
+                Grid.Row="1" Grid.ColumnSpan="2">
+            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center">
+        <Run Text="POT: " 
+             Foreground="#E8D4A0" 
+             FontWeight="SemiBold" 
+             FontSize="13"/>
+        <Run Text="{Binding PotAmount, StringFormat={}{0:N0}}" 
+             Foreground="#FFFACD" 
+             FontWeight="Bold" 
+             FontSize="14"/>
+        <Run Text=" $" 
+             Foreground="#E8D4A0" 
+             FontWeight="SemiBold" 
+             FontSize="13"/>
+            </TextBlock>
         </Border>
     </Grid>
 </UserControl>

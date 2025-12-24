@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:PokerPuzzle"
         xmlns:MyView="clr-namespace:PokerPuzzle.View"
         xmlns:VM="clr-namespace:PokerPuzzle.VM"
+        xmlns:enums="clr-namespace:PokerPuzzleData.Enum;assembly=PokerPuzzleData"
         mc:Ignorable="d"
         Title="Poker Puzzle" WindowState="Maximized" d:DesignHeight="1200" d:DesignWidth="1800" Background="SlateGray">
     <Window.DataContext>
@@ -32,10 +33,10 @@
             <MyView:PlayerHand Canvas.Left="1033" Canvas.Top="10" HorizontalAlignment="Left" VerticalAlignment="Top" DataContext="{Binding Players[7]}"/>
             <Image x:Name="Button" Source="pack://application:,,,/Ressources/button.png" Height="68" Width="70" Canvas.Top="313" Canvas.Left="1332"/>
 
-            <Grid x:Name="GameStateControlGrid"  Canvas.Left="1450" Canvas.Top="1041" Background="Red" Height="150" Width="300">
+            <Grid x:Name="GameStateControlGrid" Canvas.Left="1450" Canvas.Top="1041" Height="150" Width="300">
                 <Grid.RowDefinitions>
-                    <RowDefinition/>
-                    <RowDefinition/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
@@ -44,17 +45,46 @@
                     <ColumnDefinition/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-                <Button x:Name="PreflopButton" Content="Preflop" Command="{Binding PreflopCommand}"/>
-                <Button x:Name="FlopButton" Content="Flop" Grid.Column="1" Command="{Binding FlopCommand}"/>
-                <Button x:Name="TurnButton" Content="Turn" Grid.Column="2" Command="{Binding TurnCommand}"/>
-                <Button x:Name="RiverButton" Content="River" Grid.Column="3" Command="{Binding RiverCommand}"/>
-                <Button x:Name="ShowdownButton" Content="Showdown" Grid.Column="4" Command="{Binding ShowdownCommand}"/>
 
-                <Button x:Name="PreviousStateButton" Content="&lt;&lt;" Grid.Row="1" Grid.Column="0"/>
-                <Button x:Name="PreviousActionButton" Content="&lt;" Grid.Row="1" Grid.Column="1" Command="{Binding PreviousActionCommand}"/>
+                <Grid.Resources>
+                    <Style x:Key="StreetButtonStyle" TargetType="Button">
+                        <Setter Property="Background" Value="#2A2A2A"/>
+                        <Setter Property="Foreground" Value="#E8D4A0"/>
+                        <Setter Property="FontWeight" Value="SemiBold"/>
+                        <Setter Property="FontSize" Value="12"/>
+                        <Setter Property="BorderBrush" Value="#555555"/>
+                        <Setter Property="BorderThickness" Value="1"/>
+                        <Setter Property="Margin" Value="2"/>
+                        <Setter Property="Cursor" Value="Hand"/>
+                    </Style>
 
-                <Button x:Name="NextActionButton" Content=">" Grid.Row="1" Grid.Column="3" Command="{Binding NextActionCommand}"/>
-                <Button x:Name="NextStateButton" Content=">>" Grid.Row="1" Grid.Column="4"/>
+                    <Style x:Key="NavigationButtonStyle" TargetType="Button">
+                        <Setter Property="Background" Value="#1B4D1B"/>
+                        <Setter Property="Foreground" Value="White"/>
+                        <Setter Property="FontWeight" Value="Bold"/>
+                        <Setter Property="FontSize" Value="16"/>
+                        <Setter Property="BorderBrush" Value="#8B7355"/>
+                        <Setter Property="BorderThickness" Value="1.5"/>
+                        <Setter Property="Margin" Value="2"/>
+                        <Setter Property="Cursor" Value="Hand"/>
+                    </Style>
+
+                    <Style x:Key="PlayButtonStyle" TargetType="Button" BasedOn="{StaticResource NavigationButtonStyle}">
+                        <Setter Property="Background" Value="#2D5A2D"/>
+                    </Style>
+                </Grid.Resources>
+
+                <Button x:Name="PreflopButton" Content="Preflop" Style="{StaticResource StreetButtonStyle}" Command="{Binding PreflopCommand}" CommandParameter="{x:Static enums:StreetEnum.Preflop}"/>
+                <Button x:Name="FlopButton" Content="Flop"  Grid.Column="1" Style="{StaticResource StreetButtonStyle}" Command="{Binding FlopCommand}" CommandParameter="{x:Static enums:StreetEnum.Flop}"/>
+                <Button x:Name="TurnButton" Content="Turn" Grid.Column="2" Style="{StaticResource StreetButtonStyle}" Command="{Binding TurnCommand}" CommandParameter="{x:Static enums:StreetEnum.Turn}"/>
+                <Button x:Name="RiverButton" Content="River"  Grid.Column="3" Style="{StaticResource StreetButtonStyle}" Command="{Binding RiverCommand}" CommandParameter="{x:Static enums:StreetEnum.River}"/>
+                <Button x:Name="ShowdownButton" Content="Showdown" Grid.Column="4" Style="{StaticResource StreetButtonStyle}" Command="{Binding ShowdownCommand}" CommandParameter="{x:Static enums:StreetEnum.Showdown}"/>
+
+                <Button x:Name="PreviousStateButton" Content="⏮" Grid.Row="1" Grid.Column="0" Style="{StaticResource NavigationButtonStyle}" Command="{Binding PreviousStreetCommand}"/>
+                <Button x:Name="PreviousActionButton" Content="◀" Grid.Row="1" Grid.Column="1" Style="{StaticResource NavigationButtonStyle}" Command="{Binding PreviousActionCommand}"/>
+                <Button x:Name="PlayPauseButton" Content="▶" Grid.Row="1" Grid.Column="2" Style="{StaticResource PlayButtonStyle}" Visibility="Hidden"/>
+                <Button x:Name="NextActionButton" Content="▶" Grid.Row="1" Grid.Column="3" Style="{StaticResource NavigationButtonStyle}" Command="{Binding NextActionCommand}"/>
+                <Button x:Name="NextStateButton" Content="⏭" Grid.Row="1" Grid.Column="4" Style="{StaticResource NavigationButtonStyle}" Command="{Binding NextStreetCommand}"/>
             </Grid>
         </Canvas>
     </Viewbox>

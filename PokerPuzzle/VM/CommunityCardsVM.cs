@@ -16,6 +16,8 @@ namespace PokerPuzzle.VM
         private Visibility _isFlopVisible;
         private Visibility _isTurnVisible;
         private Visibility _isRiverVisible;
+        private Dictionary<StreetEnum, int> _streetPots;
+        private int _potAmount;
         #endregion
 
         #region Properties
@@ -67,17 +69,29 @@ namespace PokerPuzzle.VM
         {
             get => _river.ToImagePath();
         }
+
+        public int PotAmount
+        {
+            get => _potAmount;
+            set { 
+                _potAmount = value;
+                OnPropertyChanged(nameof(PotAmount));
+            }
+        }
         #endregion
 
         #region Constructors
-        public CommunityCardsVM(): this(CardsEnum.ThreeOfClubs, CardsEnum.EightOfHearts, CardsEnum.FourOfDiamonds, CardsEnum.FiveOfClubs, CardsEnum.JackOfSpades) { }
+        public CommunityCardsVM(): this(CardsEnum.ThreeOfClubs, CardsEnum.EightOfHearts, CardsEnum.FourOfDiamonds, CardsEnum.FiveOfClubs, CardsEnum.JackOfSpades, new() { }) { }
 
-        public CommunityCardsVM(CardsEnum flop1, CardsEnum flop2, CardsEnum flop3, CardsEnum turn, CardsEnum river, Visibility isFlopVisible = Visibility.Hidden, Visibility isTurnVisible = Visibility.Hidden, Visibility isRiverVisible = Visibility.Hidden)
+        public CommunityCardsVM(CommunityDTO community) : this(community.CommunityCards[0], community.CommunityCards[1], community.CommunityCards[2], community.CommunityCards[3], community.CommunityCards[4], community.StreetPots) { }
+
+        public CommunityCardsVM(CardsEnum flop1, CardsEnum flop2, CardsEnum flop3, CardsEnum turn, CardsEnum river, Dictionary<StreetEnum, int> streetPots, Visibility isFlopVisible = Visibility.Hidden, Visibility isTurnVisible = Visibility.Hidden, Visibility isRiverVisible = Visibility.Hidden)
         {
             IsFlopVisible = isFlopVisible;
             IsTurnVisible = isTurnVisible;
             IsRiverVisible = isRiverVisible;
             setCards(flop1, flop2, flop3, turn, river);
+            _streetPots = streetPots;
         }
         #endregion
 
@@ -98,9 +112,13 @@ namespace PokerPuzzle.VM
 
         #region PokerGameStage
         public void SetStreet(StreetEnum street) {
+            // Update card visibility
             IsFlopVisible = street >= StreetEnum.Flop ? Visibility.Visible : Visibility.Hidden;
             IsTurnVisible = street >= StreetEnum.Turn ? Visibility.Visible : Visibility.Hidden;
             IsRiverVisible = street >= StreetEnum.River ? Visibility.Visible : Visibility.Hidden;
+
+            // Set pot amount
+            PotAmount = _streetPots[street];
         }
         #endregion
 

@@ -16,8 +16,8 @@ namespace PokerPuzzle.VM
         private CardsEnum _card1 = CardsEnum.CardBack;
         private CardsEnum _card2 = CardsEnum.CardBack;
         private Visibility _isHidden = Visibility.Visible;
-        private ActionTypeEnum? _lastAction = null;
-        private ActionTypeEnum? _currentAction = null;
+        private Stack<ActionTypeEnum> _actionHistory;
+        private ActionTypeEnum _currentAction = ActionTypeEnum.Nothing;
         private StreetEnum? _streetHidden = null; // Street at which the player is eliminated (Code Smell)
         #endregion
 
@@ -82,7 +82,7 @@ namespace PokerPuzzle.VM
             }
         }
 
-        public ActionTypeEnum? CurrentAction
+        public ActionTypeEnum CurrentAction
         {
             get => _currentAction;
             set
@@ -95,7 +95,7 @@ namespace PokerPuzzle.VM
 
         public int PlayerPosition { get; private set; } = -1;
 
-        public string? ActionPath { get => _currentAction?.ToImagePath(); }
+        public string? ActionPath { get => _currentAction.ToImagePath(); }
         #endregion
 
         #region constructors
@@ -108,6 +108,7 @@ namespace PokerPuzzle.VM
             PlayerPosition = position;
             PlayerName = playerName ?? "";
             SetCards(card1, card2);
+            _actionHistory = new(new[] { ActionTypeEnum.Nothing });
         }
         #endregion
 
@@ -125,14 +126,31 @@ namespace PokerPuzzle.VM
         #region GameAction
         public void ApplyAction(ActionTypeEnum action)
         {
-            _lastAction = CurrentAction;
+            _actionHistory.Push(_currentAction);
             CurrentAction = action;
         }
 
-        public void UndoAction()
+        public void UndoAction(ActionTypeEnum action)
         {
-            CurrentAction = _lastAction;
-            _lastAction = null;
+            CurrentAction = _actionHistory.Pop();
+        }
+
+        public void EnterStreet(StreetEnum street) {
+            if(IsHidden == Visibility.Visible && CurrentAction == ActionTypeEnum.Fold) { // If we were folded and not eliminated yet, we get eliminated this street.
+                IsHidden = Visibility.Hidden; // We set ourselves to invisible.
+                _streetHidden = street; // We remember which street we got eliminated on (for rollback purpose).
+            } else { // Otherwise, we reset our action.
+                _actionHistory.Push(_currentAction);
+                CurrentAction = ActionTypeEnum.Nothing;
+            }
+        }
+
+        public void RollbackStreet(StreetEnum street) {
+            if(_streetHidden == street) { // In this case, we were eliminated from last street. Meaning our last action HAD to be "Fold", and still is. We just need to be visible again.
+                IsHidden = Visibility.Visible; 
+            } else { // Otherwise, we need to rollback to our last action
+                CurrentAction = _actionHistory.Pop();
+            }
         }
 
         public void HidePlayer(StreetEnum streetHidden) {
