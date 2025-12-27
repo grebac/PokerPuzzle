@@ -1,18 +1,23 @@
-﻿using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Windows.Input;
-using System.IO;
-using PokerPuzzleData.Script;
+﻿using PokerPuzzle.View;
 using PokerPuzzleData.DTO;
 using PokerPuzzleData.Enum;
+using PokerPuzzleData.JSON;
+using PokerPuzzleData.Script;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Security.Cryptography;
+using System.Windows;
+using System.Windows.Input;
 
 namespace PokerPuzzle.VM
 {
     public class GameVM : INotifyPropertyChanged
     {
         #region attributes
+        private List<PokerGameJSON> _games;
         private IReadOnlyList<GameActionDTO> Actions { get; set; }
         private int _cursor;
+        private int _gameId;
         private CommunityCardsVM _communityCards;
         #endregion
 
@@ -35,13 +40,16 @@ namespace PokerPuzzle.VM
         public ICommand NextStreetCommand { get; }
         public ICommand PreviousActionCommand { get; }
         public ICommand PreviousStreetCommand { get; }
+        public ICommand RandomGame { get; }
         public StreetEnum CurrentStreet { // TODO: Better fix. This property exists only for the "GoToStreet" function. 
             get
             {
                 if (_cursor >= Actions.Count)
                     return Actions.Last().Street;
                 return Actions[_cursor].Street;
-            } }
+            } 
+        }
+        public int GameId { get { return _gameId; } set { _gameId = value; OnPropertyChanged(nameof(GameId)); } }
         #endregion
 
         public GameVM() {
@@ -55,30 +63,30 @@ namespace PokerPuzzle.VM
             NextStreetCommand = new RelayCommand(NextStreet);
             PreviousActionCommand = new RelayCommand(PreviousAction);
             PreviousStreetCommand = new RelayCommand(PreviousStreet);
+            RandomGame = new RelayCommand(GetRandomGame);
             Players = new ObservableCollection<PlayerHandVM>();
 
             // Setup game
-            SetupGame();
+            GetRandomGame();
         }
 
         #region logic
-        public void SetupGame()
+        public void SetupGame(int id)
         {
             // Read data from file or DB
-            var path = Path.Combine(
-                AppContext.BaseDirectory,
-                "Ressources",
-                "Data",
-                "data.json");
-            var pokerGames = PokerGameJSONReader.readPokerGameJSON(path);
-            PokerGameDTO pokerGameDTO = new PokerGameDTO(pokerGames[0]);
+            if (_games == null)
+                LoadGames();
+
+            // Choose random element
+            GameId = id;
+            var pokerGameDTO = new PokerGameDTO(_games[GameId]);
 
             // Get community card infos (Community cards and pot sizes)
             CommunityCards = new CommunityCardsVM(pokerGameDTO.Community);
-            
+
             // Get player infos (Cards, pots and position)
             Players.Clear();
-            foreach(PlayerHandDTO player in pokerGameDTO.Players.Values.OrderBy(p => p.Position))
+            foreach (PlayerHandDTO player in pokerGameDTO.Players.Values.OrderBy(p => p.Position))
             {
                 Players.Add(new PlayerHandVM(player.PotSize, player.PocketCards[0], player.PocketCards[1], player.Position, "Unknown Player"));
             }
@@ -86,6 +94,36 @@ namespace PokerPuzzle.VM
             // Get game actions (bet/check/fold/.. for each street)
             Actions = pokerGameDTO.GameActions;
             _cursor = 0;
+        }
+
+        private void GetRandomGame() {
+            // Read data from file or DB
+            if (_games == null)
+                LoadGames();
+
+            var id = RandomNumberGenerator.GetInt32(_games.Count);
+            SetupGame(id);
+        }
+        #endregion
+
+        #region LoadData
+        private void LoadGames()
+        {
+            var path = System.IO.Path.Combine(
+                AppContext.BaseDirectory,
+                "Ressources",
+                "Data",
+                "hands.json");
+            _games = PokerGameJSONReader.readPokerGameJSON(path).Where(game => AtLeastTwoPlayersRevealed(game)).ToList();
+        }
+
+        private static bool AtLeastTwoPlayersRevealed(PokerGameJSON game)
+        {
+            int revealedCount = game.Players.Values
+                .Count(player => player.PocketCards != null &&
+                                player.PocketCards.Count == 2);
+
+            return revealedCount >= 2;
         }
         #endregion
 
@@ -151,7 +189,6 @@ namespace PokerPuzzle.VM
         private void GoToStreet(StreetEnum street)
         {
             if (CurrentStreet == street) return;
-            if (street == StreetEnum.Preflop) SetupGame();
 
             if(CurrentStreet < street) // If the street is greater than the current, we go forward.
             {
@@ -171,6 +208,29 @@ namespace PokerPuzzle.VM
                 NextAction(); // We re-execute said "street end"
             }
         }
+        #endregion
+
+        #region FavoriteGames
+        //private void OpenFavorites_Click(object sender, RoutedEventArgs e)
+        //{
+        //    var favoritesWindow = new FavoriteWindow(GetFavoriteGames());
+
+        //    if (favoritesWindow.ShowDialog() == true)
+        //    {
+        //        // L'utilisateur a double-cliqué sur une partie
+        //        var selectedGame = favoritesWindow.SelectedGame;
+        //        if (selectedGame != null)
+        //        {
+        //            SetupGame(selectedGame);
+        //        }
+        //    }
+        //}
+
+        //private List<PokerGameDTO> GetFavoriteGames()
+        //{
+            
+        //    return new List<PokerGameDTO>(); 
+        //}
         #endregion
 
         #region Notify

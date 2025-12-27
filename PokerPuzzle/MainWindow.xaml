@@ -18,6 +18,17 @@
                 <ImageBrush ImageSource="/Ressources/table.png"/>
             </Canvas.Background>
 
+            <!--Random Game Accessor-->
+            <Border Background="#FF2E2E2E" BorderBrush="#FFB88600" BorderThickness="1" CornerRadius="6" Padding="12,8" HorizontalAlignment="Left" Canvas.Left="1568" Canvas.Top="71" VerticalAlignment="Center">
+                <Button Content="Random Game" Background="#FF2E2E2E" Foreground="White" FontSize="18" FontWeight="SemiBold" BorderBrush="#FF444444" BorderThickness="1" Padding="12,8"  Command="{Binding RandomGame}" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+            </Border>
+            <Border Background="#FF2E2E2E" BorderBrush="#FFB88600" BorderThickness="1" CornerRadius="6" Padding="12,8" HorizontalAlignment="Left" Canvas.Left="1560" Canvas.Top="24">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Foreground="White" FontSize="18" FontWeight="Bold" Text="Game ID: " HorizontalAlignment="Center"/>
+                    <TextBlock x:Name="GameIdTextBlock" Foreground="White" FontSize="18" FontWeight="Bold" Text="{Binding GameId}" HorizontalAlignment="Right"/>
+                </StackPanel>
+            </Border>
+
             <!--COMMUNITY CARDS-->
             <MyView:CommunityCards Canvas.Top="470" Canvas.Left="370" DataContext="{Binding CommunityCards}"/>
 

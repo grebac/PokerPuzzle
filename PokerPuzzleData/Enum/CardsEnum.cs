@@ -19,6 +19,10 @@ namespace PokerPuzzleData.DTO
 
     public enum CardsEnum
     {
+        // Default
+        [Description("pack://application:,,,/Ressources/Cards/card_back.png")]
+        CardBack,
+
         // Clubs
         [Description("pack://application:,,,/Ressources/Cards/ace_of_clubs.png")]
         [CardCode("Ac")]
@@ -181,10 +185,7 @@ namespace PokerPuzzleData.DTO
         QueenOfSpades,
         [Description("pack://application:,,,/Ressources/Cards/king_of_spades.png")]
         [CardCode("Ks")]
-        KingOfSpades,
-
-        [Description("pack://application:,,,/Ressources/Cards/card_back.png")]
-        CardBack
+        KingOfSpades
     }
     public static class CardHelper
     {
