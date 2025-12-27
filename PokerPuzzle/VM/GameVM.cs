@@ -1,4 +1,5 @@
-﻿using PokerPuzzle.View;
+﻿using PokerPuzzle.IO;
+using PokerPuzzle.View;
 using PokerPuzzleData.DTO;
 using PokerPuzzleData.Enum;
 using PokerPuzzleData.JSON;
@@ -50,6 +51,8 @@ namespace PokerPuzzle.VM
             } 
         }
         public int GameId { get { return _gameId; } set { _gameId = value; OnPropertyChanged(nameof(GameId)); } }
+        public ICommand OpenFavorites {  get; }
+        public ICommand AddToFavorties { get; }
         #endregion
 
         public GameVM() {
@@ -64,6 +67,8 @@ namespace PokerPuzzle.VM
             PreviousActionCommand = new RelayCommand(PreviousAction);
             PreviousStreetCommand = new RelayCommand(PreviousStreet);
             RandomGame = new RelayCommand(GetRandomGame);
+            OpenFavorites = new RelayCommand(OpenFavoritesMethod);
+            AddToFavorties = new RelayCommand(AddToFavorites);
             Players = new ObservableCollection<PlayerHandVM>();
 
             // Setup game
@@ -211,26 +216,38 @@ namespace PokerPuzzle.VM
         #endregion
 
         #region FavoriteGames
-        //private void OpenFavorites_Click(object sender, RoutedEventArgs e)
-        //{
-        //    var favoritesWindow = new FavoriteWindow(GetFavoriteGames());
+        // Ouvrir la fenêtre des favoris
+        private void OpenFavoritesMethod()
+        {
+            var favorites = FavoritesGameHelper.LoadFavorites();
+            var favoritesWindow = new FavoriteWindow(favorites);
 
-        //    if (favoritesWindow.ShowDialog() == true)
-        //    {
-        //        // L'utilisateur a double-cliqué sur une partie
-        //        var selectedGame = favoritesWindow.SelectedGame;
-        //        if (selectedGame != null)
-        //        {
-        //            SetupGame(selectedGame);
-        //        }
-        //    }
-        //}
+            if (favoritesWindow.ShowDialog() == true)
+            {
+                // L'utilisateur a double-cliqué sur une partie
+                var selectedIndex = favoritesWindow.SelectedGameIndex;
+                if (selectedIndex.HasValue)
+                {
+                    SetupGame(selectedIndex.Value);
+                }
 
-        //private List<PokerGameDTO> GetFavoriteGames()
-        //{
-            
-        //    return new List<PokerGameDTO>(); 
-        //}
+                // Sauvegarder les changements (suppressions/éditions)
+                var updatedFavorites = favoritesWindow.GetUpdatedFavorites();
+                FavoritesGameHelper.SaveFavorites(updatedFavorites);
+            }
+        }
+
+        private void AddToFavorites()
+        {
+            if (GameId < 0)
+            {
+                MessageBox.Show("No game loaded.", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            FavoritesGameHelper.AddFavorite(GameId, "No Comment yet");
+            MessageBox.Show("Game added to favorites!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
         #endregion
 
         #region Notify
