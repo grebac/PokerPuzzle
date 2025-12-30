@@ -216,7 +216,7 @@ namespace PokerPuzzle.VM
         #endregion
 
         #region FavoriteGames
-        // Ouvrir la fenêtre des favoris
+        // Open Favorites window
         private void OpenFavoritesMethod()
         {
             var favorites = FavoritesGameHelper.LoadFavorites();
@@ -224,17 +224,16 @@ namespace PokerPuzzle.VM
 
             if (favoritesWindow.ShowDialog() == true)
             {
-                // L'utilisateur a double-cliqué sur une partie
+                // User selected a game
                 var selectedIndex = favoritesWindow.SelectedGameIndex;
                 if (selectedIndex.HasValue)
                 {
                     SetupGame(selectedIndex.Value);
                 }
-
-                // Sauvegarder les changements (suppressions/éditions)
-                var updatedFavorites = favoritesWindow.GetUpdatedFavorites();
-                FavoritesGameHelper.SaveFavorites(updatedFavorites);
             }
+            // Save updates
+            var updatedFavorites = favoritesWindow.GetUpdatedFavorites();
+            FavoritesGameHelper.SaveFavorites(updatedFavorites);
         }
 
         private void AddToFavorites()
