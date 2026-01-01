@@ -15,27 +15,29 @@ namespace PokerPuzzleData.DB.Repository
             _db = db;
         }
 
-        public GameEntity GetGame(int gameId)
-        {
+        private IQueryable<GameEntity> GetGames() {
             return _db.Games
                 .Include(g => g.Players)
                 .Include(g => g.Actions)
                 .Include(g => g.CommunityCards)
-                .FirstOrDefault(g => g.GameId == gameId);
+                .Where(g => g.HasFlop);
+        }
+
+        public GameEntity GetGame(int gameId)
+        {
+            return GetGames().FirstOrDefault(g => g.GameId == gameId);
         }
 
         public GameEntity GetRandomGame()
         {
-            var count = _db.Games.Count();
+            var games = GetGames();
 
-            var randomIndex = Random.Shared.Next(count);
-
-            return _db.Games
+            return games
                 .Include(g => g.Players)
                 .Include(g => g.Actions)
                 .Include(g => g.CommunityCards)
-                .Skip(randomIndex)
-                .First();
+                .OrderBy(x => EF.Functions.Random())
+                .FirstOrDefault();
         }
     }
 }

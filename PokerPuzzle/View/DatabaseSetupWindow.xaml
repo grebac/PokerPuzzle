@@ -1,0 +1,76 @@
+﻿<Window x:Class="PokerPuzzle.View.DatabaseSetupWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:PokerPuzzle.VM"
+        xmlns:VM="clr-namespace:PokerPuzzle.VM"
+        mc:Ignorable="d"
+        Title="Poker Puzzle – Database Setup"
+        Width="520"
+        Height="340"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize">
+
+    <Window.DataContext>
+        <VM:DatabaseSetupVM/>
+    </Window.DataContext>
+    
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Explanation -->
+        <TextBlock Grid.Row="0"
+                   TextWrapping="Wrap"
+                   FontSize="14">
+            This application requires a poker hand history file to work.
+            You only need to do this once.
+        </TextBlock>
+
+        <TextBlock Grid.Row="1"
+                   Margin="0,10,0,0"
+                   TextWrapping="Wrap">
+            Download the JSON file from the official release, then select it below.
+        </TextBlock>
+
+        <!-- Actions -->
+        <StackPanel Grid.Row="2"
+                    Margin="0,20,0,0"
+                    VerticalAlignment="Top">
+
+            <Button Content="Download JSON file"
+                    Height="32"
+                    Margin="0,0,0,10"
+                    Command="{Binding OpenDownloadPageCommand}" />
+
+            <Button Content="Select JSON file…"
+                    Height="32"
+                    Command="{Binding SelectJsonFileCommand}" />
+
+            <ProgressBar
+                Minimum="0"
+                Maximum="{Binding ProgressMaximum}"
+                Value="{Binding ProgressValue}"
+                Visibility="{Binding IsImporting}"
+                Height="20"
+                Margin="0,10,0,0" />
+
+            <TextBlock Margin="0,10,0,0"
+                       Text="{Binding StatusMessage}"
+                       TextWrapping="Wrap" />
+        </StackPanel>
+
+        <!-- Footer -->
+        <Button Grid.Row="3"
+                Content="Continue"
+                Height="32"
+                IsEnabled="{Binding CanContinue}"
+                HorizontalAlignment="Right"
+                Width="100" Click="Button_Click"/>
+    </Grid>
+</Window>

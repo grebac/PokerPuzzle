@@ -11,6 +11,7 @@ namespace PokerPuzzleData.DB.Entity
 
         public int NumPlayers { get; set; }
         public int FinalPot { get; set; }
+        public bool HasFlop { get; set; }
         public bool HasShowdown { get; set; }
         public required string Source { get; set; }
 

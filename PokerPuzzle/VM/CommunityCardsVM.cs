@@ -81,7 +81,7 @@ namespace PokerPuzzle.VM
         #endregion
 
         #region Constructors
-        public CommunityCardsVM(): this(CardsEnum.ThreeOfClubs, CardsEnum.EightOfHearts, CardsEnum.FourOfDiamonds, CardsEnum.FiveOfClubs, CardsEnum.JackOfSpades, new() { }) { }
+        public CommunityCardsVM(): this(CardsEnum.ThreeOfClubs, CardsEnum.EightOfHearts, CardsEnum.FourOfDiamonds, CardsEnum.FiveOfClubs, CardsEnum.JackOfSpades, new()) { }
 
         public CommunityCardsVM(CommunityDTO community) : this(community.CommunityCards.ElementAtOrDefault(0), community.CommunityCards.ElementAtOrDefault(1), community.CommunityCards.ElementAtOrDefault(2), community.CommunityCards.ElementAtOrDefault(3), community.CommunityCards.ElementAtOrDefault(4), community.StreetPots) { }
 

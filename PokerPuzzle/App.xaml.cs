@@ -1,6 +1,8 @@
-﻿using PokerPuzzle.VM;
-using System.Configuration;
-using System.Data;
+﻿using PokerPuzzle.View;
+using PokerPuzzleData.DB;
+using PokerPuzzleData.Service;
+using System.Diagnostics;
+using System.IO;
 using System.Windows;
 
 namespace PokerPuzzle
@@ -10,5 +12,28 @@ namespace PokerPuzzle
     /// </summary>
     public partial class App : Application
     {
+        override protected void OnStartup(StartupEventArgs e){
+            base.OnStartup(e);
+
+            try {
+                GameImportService service = new GameImportService(new PokerPuzzleContext());
+                service.EnsureDatabaseReady();
+            }
+            catch (FileNotFoundException) {
+                // If an error occured, the user probably does not have the JSON data file
+                // A window pops-up to guide the user toward downloading the JSON data file
+                DatabaseSetupWindow databaseSetupWindow = new DatabaseSetupWindow();
+                databaseSetupWindow.ShowDialog();
+                
+                // Restart application
+                //Process.Start(Application.ResourceAssembly.Location);
+                //Application.Current.Shutdown();
+            }
+            catch (Exception ex) {
+                // Any other occasionnal exception
+                MessageBox.Show($"Unexpected error during Database loading: {ex.Message}");
+                Application.Current.Shutdown();
+            }
+        }
     }
 }

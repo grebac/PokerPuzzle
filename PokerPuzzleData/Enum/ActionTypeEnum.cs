@@ -29,7 +29,7 @@ namespace PokerPuzzleData.Enum
     public static class ActionTypeHelper
     {
         public static ActionTypeEnum ParseAction(string c) {
-            return c.ToLower() switch
+            return c.ToLowerInvariant() switch
             {
                 "f" => ActionTypeEnum.Fold,
                 "c" => ActionTypeEnum.Call,

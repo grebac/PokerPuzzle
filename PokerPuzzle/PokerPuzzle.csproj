@@ -92,7 +92,7 @@
     <Resource Include="Ressources\Cards\queen_of_diamonds.png" />
     <Resource Include="Ressources\Cards\queen_of_hearts.png" />
     <Resource Include="Ressources\Cards\queen_of_spades.png" />
-    <Content Include="Ressources\Data\hands.json">
+    <Content Include="Ressources\hands.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Resource Include="Ressources\table.png" />

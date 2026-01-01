@@ -14,8 +14,9 @@ namespace PokerPuzzle.IO
 
         public static Dictionary<int, string> LoadFavorites()
         {
-            if (!File.Exists(FavoritesPath))
+            if (!File.Exists(FavoritesPath)) {
                 return new Dictionary<int, string>();
+            }
 
             try
             {

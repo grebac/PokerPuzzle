@@ -14,7 +14,16 @@ namespace PokerPuzzleData.DB
         public DbSet<CommunityCardsEntity> CommunityCards { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder options)
-            => options.UseSqlite("Data Source=PokerPuzzle.db");
+        {
+            var baseDir = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            var appDir = Path.Combine(baseDir, "PokerPuzzle");
+
+            if (!Directory.Exists(appDir))
+                Directory.CreateDirectory(appDir);
+
+            var dbPath = Path.Combine(appDir, "PokerPuzzle.db");
+            options.UseSqlite($"Data Source={dbPath}");
+        }
 
         protected override void OnModelCreating(ModelBuilder model)
         {

@@ -4,81 +4,92 @@ using PokerPuzzleData.DB.Entity;
 using PokerPuzzleData.Enum;
 using PokerPuzzleData.JSON;
 using PokerPuzzleData.Script;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Diagnostics;
 
-namespace PokerPuzzleData.Import
+namespace PokerPuzzleData.Service
 {
     public class GameImportService
     {
         private readonly PokerPuzzleContext _db;
+        private readonly string _jsonPath;
 
-        public GameImportService(PokerPuzzleContext db)
+        public GameImportService(PokerPuzzleContext db, string ?jsonPath = null)
         {
             _db = db;
+            _jsonPath = jsonPath ?? GetDefaultJsonPath();
         }
 
-        public void EnsureDatabaseReady()
+        public void EnsureDatabaseReady(IProgress<ImportProgress>? progress = null)
         {
-            using var context = new PokerPuzzleContext();
-
             // 1. Ensure schema
-            context.Database.Migrate();
+            _db.Database.Migrate();
 
             // 2. Fill only once
-            if (context.Games.Any())
+            if (_db.Games.Any()) {
                 return;
+            }
 
-            // 3. Load JSON data
-            var jsonGames = LoadJSONGames();
+            // 3. Ensure JSON file exists
+            if (!Path.Exists(_jsonPath)) {
+                throw new FileNotFoundException("Poker hand JSON file not found. Can't initialize the Database.", _jsonPath);
+            }
 
-            // 4. Get JSON into WITH BULK OPTIMISATION
+            // 4. Import JSON data
+            ImportJSON(_db, progress);
+        }
+
+        private void ImportJSON(PokerPuzzleContext context, IProgress<ImportProgress>? progress = null) {
+            // Load JSON data
+            var jsonGames = LoadJSONGames(_jsonPath);
+
+            // Get JSON into WITH BULK OPTIMISATION
             context.ChangeTracker.AutoDetectChangesEnabled = false;
 
             using var transaction = context.Database.BeginTransaction();
 
-            int count = 0;
+            int processed = 0;
+            int total = jsonGames.Count;
 
             foreach (var game in jsonGames)
             {
                 context.Games.Add(BuildGameEntity(game));
-                count++;
+                processed++;
 
-                if (count % 1000 == 0)
+                if (processed % 1000 == 0)
                 {
                     context.SaveChanges();
                     context.ChangeTracker.Clear();
                 }
+                progress?.Report(new ImportProgress(processed, total));
             }
 
             context.SaveChanges();
             transaction.Commit();
         }
 
-        private List<PokerGameJSON> LoadJSONGames()
+        private List<PokerGameJSON> LoadJSONGames(string path)
         {
-            var path = Path.Combine(
-                AppContext.BaseDirectory,
-                "Ressources",
-                "Data",
-                "hands.json");
-            return PokerGameJSONReader.readPokerGameJSON(path).ToList(); // To keep showdown games: .Where(game => AtLeastTwoPlayersRevealed(game))
+            return PokerGameJSONReader.readPokerGameJSON(path).ToList();
         }
 
+        private static string GetDefaultJsonPath() => Path.Combine(AppContext.BaseDirectory, "Ressources", "Data", "hands.json");
+
+        #region ConvertJsonToEntityFramework
         private GameEntity BuildGameEntity(PokerGameJSON json)
         {
+            var actions = BuildActions(json);
             return new GameEntity
             {
                 ExternalGameId = json.Id,
                 NumPlayers = json.Players.Count,
                 FinalPot = json.StreetPotJSONs.LastOrDefault()?.Size ?? 0,
-                HasShowdown = json.StreetPotJSONs.Any(p => p.Street == "s"),
+                HasFlop = actions.Any(a => a.Street == StreetEnum.Preflop && a.ActionType == ActionTypeEnum.StreetEnd), // If Preflop was ended, there is a flop
+                HasShowdown = actions.Any(a => a.Street == StreetEnum.River && a.ActionType == ActionTypeEnum.StreetEnd), // If river was ended, there is a showndown
                 Source = "JSON",
 
                 CommunityCards = BuildCommunityCards(json),
                 Players = BuildPlayers(json),
-                Actions = BuildActions(json)
+                Actions = actions
             };
         }
 
@@ -136,5 +147,6 @@ namespace PokerPuzzleData.Import
 
             return actions;
         }
+        #endregion
     }
 }

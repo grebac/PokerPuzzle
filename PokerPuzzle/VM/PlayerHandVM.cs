@@ -26,8 +26,10 @@ namespace PokerPuzzle.VM
         public string Card1Path { 
             get 
             {
-                if (_areCardsVisible) return _card1.ToImagePath();
-                    return CardsEnum.CardBack.ToImagePath();
+                if (_areCardsVisible) {
+                    return _card1.ToImagePath();
+                }
+                return CardsEnum.CardBack.ToImagePath();
             }
         }
 
@@ -35,7 +37,9 @@ namespace PokerPuzzle.VM
         {
             get
             {
-                if (_areCardsVisible) return _card2.ToImagePath();
+                if (_areCardsVisible) {
+                    return _card2.ToImagePath();
+                }
                 return CardsEnum.CardBack.ToImagePath();
 
             }
@@ -138,7 +142,7 @@ namespace PokerPuzzle.VM
         public void EnterStreet(StreetEnum street) {
             if(IsHidden == Visibility.Visible && CurrentAction == ActionTypeEnum.Fold) { // If we were folded and not eliminated yet, we get eliminated this street.
                 IsHidden = Visibility.Hidden; // We set ourselves to invisible.
-                _streetHidden = street; // We remember which street we got eliminated on (for rollback purpose).
+                _streetHidden = street - 1; // We remember which street we got eliminated on (for rollback purpose). If we enter the River, it means we got eliminated on the previous street: the Turn (street - 1)
             } else { // Otherwise, we reset our action.
                 _actionHistory.Push(_currentAction);
                 CurrentAction = ActionTypeEnum.Nothing;
@@ -146,7 +150,7 @@ namespace PokerPuzzle.VM
         }
 
         public void RollbackStreet(StreetEnum street) {
-            if(_streetHidden == street) { // In this case, we were eliminated from last street. Meaning our last action HAD to be "Fold", and still is. We just need to be visible again.
+            if(_streetHidden == street) { // If we rollback to the street we got eliminated on, we should set out visibility back on. CurrentAction should still be at "fold".
                 IsHidden = Visibility.Visible; 
             } else { // Otherwise, we need to rollback to our last action
                 CurrentAction = _actionHistory.Pop();

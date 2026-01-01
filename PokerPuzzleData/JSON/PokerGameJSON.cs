@@ -32,7 +32,7 @@ namespace PokerPuzzleData.JSON
         }
 
         public Dictionary<StreetEnum, int> ParseStreetPots() {
-            Dictionary<StreetEnum, int> streetPots = new Dictionary<StreetEnum, int>() { {StreetEnum.Preflop, 0 } };
+            Dictionary<StreetEnum, int> streetPots = new Dictionary<StreetEnum, int> { {StreetEnum.Preflop, 0 } };
 
             foreach (var streetPot in StreetPotJSONs) {
                 StreetEnum street = StreetHelper.ParseStreet(streetPot.Street);
@@ -48,7 +48,7 @@ namespace PokerPuzzleData.JSON
             int index = 0;
 
             // Street names in JSON
-            var streetsJSON = new List<string>() {
+            var streetsJSON = new List<string> {
                 "p", // Preflop
                 "f", // Flop
                 "t", // Turn
@@ -60,6 +60,9 @@ namespace PokerPuzzleData.JSON
                 .OrderBy(p => p.Value.Position)
                 .ToList();
 
+            // Track players who are still in the hand
+            var activePlayerPositions = new HashSet<int>(playersInOrder.Select(p => p.Value.Position));
+
             foreach (var street in streetsJSON)
             {
                 // 1️- Build action queues per player
@@ -69,6 +72,7 @@ namespace PokerPuzzleData.JSON
 
                 foreach (var (playerName, player) in playersInOrder)
                 {
+                    // There's a dictionnary for each Street. We hash each player's position with a Queue, either empty or filled if they took actions.
                     var bet = player.Bets.FirstOrDefault(b => b.Stage == street);
 
                     var queue = bet != null
@@ -81,7 +85,7 @@ namespace PokerPuzzleData.JSON
                 // 2️- Consume queues round by round
                 // Loop through each player in order for said street, and keep adding actions until every single action is consumed
                 bool actionsRemaining = true;
-                bool streetHadAnyAction = false;
+                bool streetNotFullyFolded = false;
 
                 while (actionsRemaining)
                 {
@@ -89,8 +93,9 @@ namespace PokerPuzzleData.JSON
 
                     foreach (var (playerPosition, queue) in actionQueues)
                     {
-                        if (queue.Count == 0)
+                        if (queue.Count == 0) {
                             continue;
+                        }
 
                         ActionTypeEnum action = ActionTypeHelper.ParseAction(queue.Dequeue().ToString());
                         if (action == ActionTypeEnum.Nothing) {
@@ -106,16 +111,28 @@ namespace PokerPuzzleData.JSON
                             index++
                         ));
 
-                        streetHadAnyAction = true;
+                        // If the player folds, we remove him from the active player pool
+                        if (action == ActionTypeEnum.Fold)
+                        {
+                            activePlayerPositions.Remove(playerPosition);
+                            if (activePlayerPositions.Count <= 1)
+                            {
+                                actionsRemaining = false;
+                                streetNotFullyFolded = false; // If every players but one folded, the game is ended on this street
+                                break;
+                            }
+                        }
+
                         actionsRemaining = true;
+                        streetNotFullyFolded = true;
                     }
                 }
 
                 // Add a "end of street" action
-                if (streetHadAnyAction) {
+                if (streetNotFullyFolded) {
                     actions.Add(new GameActionDTO(
                         playerPosition: -1,
-                        street: StreetHelper.ParseStreet(street) + 1,
+                        street: StreetHelper.ParseStreet(street),
                         action: ActionTypeEnum.StreetEnd,
                         orderIndex: index++
                     ));

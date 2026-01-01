@@ -4,9 +4,11 @@ using PokerPuzzleData.DB;
 using PokerPuzzleData.DB.Repository;
 using PokerPuzzleData.DTO;
 using PokerPuzzleData.Enum;
-using PokerPuzzleData.Import;
+using PokerPuzzleData.Service;
+using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Windows;
 using System.Windows.Input;
 
@@ -30,8 +32,9 @@ namespace PokerPuzzle.VM
                 OnPropertyChanged(nameof(CommunityCards));
             } 
         }
+        #region Players
         public ObservableCollection<PlayerHandVM> Players { get; }
-
+        #endregion
         public ICommand PreflopCommand { get; }
         public ICommand FlopCommand { get; }
         public ICommand TurnCommand { get; }
@@ -45,8 +48,9 @@ namespace PokerPuzzle.VM
         public StreetEnum CurrentStreet { // TODO: Better fix. This property exists only for the "GoToStreet" function. 
             get
             {
-                if (_cursor >= Actions.Count)
+                if (_cursor >= Actions.Count) {
                     return Actions.Last().Street;
+                }
                 return Actions[_cursor].Street;
             } 
         }
@@ -70,12 +74,8 @@ namespace PokerPuzzle.VM
             OpenFavorites = new RelayCommand(OpenFavoritesMethod);
             AddToFavorties = new RelayCommand(AddToFavorites);
             Players = new ObservableCollection<PlayerHandVM>();
-            _gameRepository = new GameRepository(new PokerPuzzleContext()); // TODO - Should I have a global PokerPuzzleContext?
+            _gameRepository = new GameRepository(new PokerPuzzleContext());
 
-            GameImportService service = new GameImportService(new PokerPuzzleContext());
-            service.EnsureDatabaseReady();
-
-            // Setup game
             GetRandomGame();
         }
 
@@ -83,8 +83,9 @@ namespace PokerPuzzle.VM
         public void SetupGame(int id) // TODO - id should be a string
         {
             var gameEntity = _gameRepository.GetGame(id);
-            if (gameEntity == null)
+            if (gameEntity == null) {
                 return;
+            }
             
             GameId = id;
             var pokerGameDTO = PokerGameDTO.FromEntity(gameEntity);
@@ -116,46 +117,33 @@ namespace PokerPuzzle.VM
         #endregion
 
         #region ControlButtons
-        public void NextAction() {
+        private void NextAction() {
             if (_cursor >= Actions.Count)
                 return;
 
             var action = Actions[_cursor++];
 
-            // Special update in case of StreetEnd
+            // StreetEnd action is a broadcasted event
             if (action.Action == ActionTypeEnum.StreetEnd) {
-                // Let players update their action based on the new street.
-                foreach (var p in Players)
-                {
-                    p.EnterStreet(action.Street);
-                }
-                // Update the CommunityCards
-                CommunityCards.SetStreet(action.Street);
+                SendEventNewStreet(action.Street + 1); // Send event for the next street
             }
-            else
-            {
-                // Update player if need be
+            else {
+                // Other event are player specific
                 int playerPosition = action.PlayerPosition;
                 Players[playerPosition - 1].ApplyAction(action.Action);
-            }                
+            }
         }
 
-        public void PreviousAction() {
-            if (_cursor < 1)
+        private void PreviousAction() {
+            if (_cursor < 1) {
                 return;
+            }
 
             var action = Actions[--_cursor];
 
             if (action.Action == ActionTypeEnum.StreetEnd)
             {
-                // Show player eliminated at previous street
-                foreach (var p in Players)
-                {
-                    p.RollbackStreet(action.Street);
-                }
-
-                // Update street
-                CommunityCards.SetStreet(action.Street-1);
+                SendEventRollbackStreet(action.Street);
             }
             else {
                 // Update player if need be
@@ -164,14 +152,39 @@ namespace PokerPuzzle.VM
             }
         }
 
+        #region ControlButtonHelpers
+        private void SendEventRollbackStreet(StreetEnum street) {
+            // Show player eliminated at previous street
+            foreach (var p in Players)
+            {
+                p.RollbackStreet(street);
+            }
+
+            // Update street
+            CommunityCards.SetStreet(street);
+        }
+
+        private void SendEventNewStreet(StreetEnum street)
+        {
+            // Let players update their action based on the new street.
+            foreach (var p in Players)
+            {
+                p.EnterStreet(street);
+            }
+            // Update the CommunityCards
+            CommunityCards.SetStreet(street);
+        }
+
         private void NextStreet() {
-            if (CurrentStreet < StreetEnum.Showdown)
+            if (CurrentStreet < StreetEnum.Showdown) { 
                 GoToStreet(CurrentStreet + 1);
+            }
         }
 
         private void PreviousStreet() {
-            if(CurrentStreet > StreetEnum.Preflop)
+            if (CurrentStreet > StreetEnum.Preflop) { 
                 GoToStreet(CurrentStreet - 1);
+            }
         }
 
         private void GoToStreet(StreetEnum street)
@@ -180,22 +193,32 @@ namespace PokerPuzzle.VM
 
             if(CurrentStreet < street) // If the street is greater than the current, we go forward.
             {
-                // We execute actions until we get to the "street end" action
-                while (_cursor < Actions.Count && !(Actions[_cursor].Action == ActionTypeEnum.StreetEnd && CurrentStreet == street)) 
+                // We execute actions until we get to the "street end" action of the previous street
+                // If we want to access the Turn, we need to get to the Flops's end + 1 action
+                while (_cursor < Actions.Count && !(IsStreetEndOf(street-1))) 
                 {
                     NextAction();
                 }
                 NextAction(); // We execute the "street end" action
             } else
             {
-                // We rollback actions until we have executed "street end"
-                while (_cursor > 0 && !(CurrentStreet == street && Actions[_cursor].Action == ActionTypeEnum.StreetEnd))
+                // We rollback actions until we havefind the "street end" of the previous street
+                // If we want to access the Turn, we rollback until the very end of the Flop + 1 action
+                while (_cursor > 0 && !(IsStreetEndOf(street-1)))
                 {
                     PreviousAction();
                 }
                 NextAction(); // We re-execute said "street end"
             }
         }
+
+        private bool IsStreetEndOf(StreetEnum street) {
+            if (_cursor == Actions.Count) { // Protection in case the cursor is beyond the last action
+                return false;
+            }
+            return Actions.ElementAt(_cursor).Action == ActionTypeEnum.StreetEnd && CurrentStreet == street;
+        }
+        #endregion
         #endregion
 
         #region FavoriteGames
