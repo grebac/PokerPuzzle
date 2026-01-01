@@ -1,4 +1,5 @@
-﻿using PokerPuzzleData.JSON;
+﻿using PokerPuzzleData.DB.Entity;
+using PokerPuzzleData.JSON;
 
 namespace PokerPuzzleData.DTO
 {
@@ -7,6 +8,11 @@ namespace PokerPuzzleData.DTO
         public List<CardsEnum> PocketCards { get; set; }
         public int Position { get; set; }
         public int PotSize { get; set; }
+        public PlayerHandDTO(int position, int potSize, List<CardsEnum> pocketCards) { 
+            Position = position;
+            PocketCards = pocketCards;
+            PotSize = potSize;
+        }
 
         public PlayerHandDTO(PlayerHandJSON json) {
             PocketCards = new List<CardsEnum>();
@@ -23,5 +29,11 @@ namespace PokerPuzzleData.DTO
             Position = json.Position;
             PotSize = json.PotSize;
         }
+        public static PlayerHandDTO FromEntity(PlayerEntity e)
+        {
+            return new PlayerHandDTO(e.Position, 0 //TODO - Ajouter le PotSize
+                , [CardHelper.fromCodeToEnum(e.Card1), CardHelper.fromCodeToEnum(e.Card2)]);
+        }
+
     }
 }

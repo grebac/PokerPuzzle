@@ -198,13 +198,14 @@ namespace PokerPuzzleData.DTO
         }
 
         // Converts a card code to a card enum using the CardCode attribute
-        public static CardsEnum fromCodeToEnum(string code) {
-            foreach (CardsEnum card in System.Enum.GetValues(typeof(CardsEnum))) {
-                var attribute = card.GetType().GetField(card.ToString())?.GetCustomAttribute<CardCodeAttribute>();
-                if (attribute?.Code == code)
-                    return card;
-            }
-            return CardsEnum.CardBack;
+        public static CardsEnum fromCodeToEnum(string? code) {
+            if(code != null)
+                foreach (CardsEnum card in System.Enum.GetValues(typeof(CardsEnum))) {
+                    var attribute = card.GetType().GetField(card.ToString())?.GetCustomAttribute<CardCodeAttribute>();
+                    if (attribute?.Code == code)
+                        return card;
+                }
+            return CardsEnum.CardBack; // Default return
         }
     }
 }

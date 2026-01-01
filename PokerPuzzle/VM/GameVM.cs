@@ -1,12 +1,12 @@
 ﻿using PokerPuzzle.IO;
 using PokerPuzzle.View;
+using PokerPuzzleData.DB;
+using PokerPuzzleData.DB.Repository;
 using PokerPuzzleData.DTO;
 using PokerPuzzleData.Enum;
-using PokerPuzzleData.JSON;
-using PokerPuzzleData.Script;
+using PokerPuzzleData.Import;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Security.Cryptography;
 using System.Windows;
 using System.Windows.Input;
 
@@ -15,11 +15,11 @@ namespace PokerPuzzle.VM
     public class GameVM : INotifyPropertyChanged
     {
         #region attributes
-        private List<PokerGameJSON> _games;
-        private IReadOnlyList<GameActionDTO> Actions { get; set; }
+        private ObservableCollection<GameActionDTO> Actions { get; set; } // TODO - Weird useless warning. I will create a new ObservableCollection but out of the main.
         private int _cursor;
         private int _gameId;
-        private CommunityCardsVM _communityCards;
+        private CommunityCardsVM _communityCards; // TODO - Use only one instance that you 
+        private GameRepository _gameRepository;
         #endregion
 
         #region Properties
@@ -70,22 +70,29 @@ namespace PokerPuzzle.VM
             OpenFavorites = new RelayCommand(OpenFavoritesMethod);
             AddToFavorties = new RelayCommand(AddToFavorites);
             Players = new ObservableCollection<PlayerHandVM>();
+            _gameRepository = new GameRepository(new PokerPuzzleContext()); // TODO - Should I have a global PokerPuzzleContext?
+
+            GameImportService service = new GameImportService(new PokerPuzzleContext());
+            service.EnsureDatabaseReady();
 
             // Setup game
             GetRandomGame();
         }
 
-        #region logic
-        public void SetupGame(int id)
+        #region GetGame
+        public void SetupGame(int id) // TODO - id should be a string
         {
-            // Read data from file or DB
-            if (_games == null)
-                LoadGames();
-
-            // Choose random element
+            var gameEntity = _gameRepository.GetGame(id);
+            if (gameEntity == null)
+                return;
+            
             GameId = id;
-            var pokerGameDTO = new PokerGameDTO(_games[GameId]);
+            var pokerGameDTO = PokerGameDTO.FromEntity(gameEntity);
 
+            SetupGame(pokerGameDTO);
+        }
+
+        public void SetupGame(PokerGameDTO pokerGameDTO) {
             // Get community card infos (Community cards and pot sizes)
             CommunityCards = new CommunityCardsVM(pokerGameDTO.Community);
 
@@ -97,38 +104,14 @@ namespace PokerPuzzle.VM
             }
 
             // Get game actions (bet/check/fold/.. for each street)
-            Actions = pokerGameDTO.GameActions;
+            Actions = new ObservableCollection<GameActionDTO>(pokerGameDTO.GameActions);
             _cursor = 0;
         }
 
         private void GetRandomGame() {
-            // Read data from file or DB
-            if (_games == null)
-                LoadGames();
-
-            var id = RandomNumberGenerator.GetInt32(_games.Count);
-            SetupGame(id);
-        }
-        #endregion
-
-        #region LoadData
-        private void LoadGames()
-        {
-            var path = System.IO.Path.Combine(
-                AppContext.BaseDirectory,
-                "Ressources",
-                "Data",
-                "hands.json");
-            _games = PokerGameJSONReader.readPokerGameJSON(path).Where(game => AtLeastTwoPlayersRevealed(game)).ToList();
-        }
-
-        private static bool AtLeastTwoPlayersRevealed(PokerGameJSON game)
-        {
-            int revealedCount = game.Players.Values
-                .Count(player => player.PocketCards != null &&
-                                player.PocketCards.Count == 2);
-
-            return revealedCount >= 2;
+            var game = _gameRepository.GetRandomGame();
+            GameId = game.GameId;
+            SetupGame(PokerGameDTO.FromEntity(game));
         }
         #endregion
 
@@ -198,7 +181,7 @@ namespace PokerPuzzle.VM
             if(CurrentStreet < street) // If the street is greater than the current, we go forward.
             {
                 // We execute actions until we get to the "street end" action
-                while (_cursor <= Actions.Count && !(Actions[_cursor].Action == ActionTypeEnum.StreetEnd && CurrentStreet == street)) 
+                while (_cursor < Actions.Count && !(Actions[_cursor].Action == ActionTypeEnum.StreetEnd && CurrentStreet == street)) 
                 {
                     NextAction();
                 }
@@ -250,7 +233,7 @@ namespace PokerPuzzle.VM
         #endregion
 
         #region Notify
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         protected void OnPropertyChanged(string propertyName)
         {

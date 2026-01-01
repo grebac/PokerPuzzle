@@ -81,6 +81,7 @@ namespace PokerPuzzleData.JSON
                 // 2️- Consume queues round by round
                 // Loop through each player in order for said street, and keep adding actions until every single action is consumed
                 bool actionsRemaining = true;
+                bool streetHadAnyAction = false;
 
                 while (actionsRemaining)
                 {
@@ -105,17 +106,20 @@ namespace PokerPuzzleData.JSON
                             index++
                         ));
 
+                        streetHadAnyAction = true;
                         actionsRemaining = true;
                     }
                 }
 
                 // Add a "end of street" action
-                actions.Add(new GameActionDTO(
-                    playerPosition: -1,
-                    street: StreetHelper.ParseStreet(street)+1,
-                    action: ActionTypeEnum.StreetEnd,
-                    orderIndex: index++
-                ));
+                if (streetHadAnyAction) {
+                    actions.Add(new GameActionDTO(
+                        playerPosition: -1,
+                        street: StreetHelper.ParseStreet(street) + 1,
+                        action: ActionTypeEnum.StreetEnd,
+                        orderIndex: index++
+                    ));
+                }
             }
 
             return actions;
