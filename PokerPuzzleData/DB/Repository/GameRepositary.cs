@@ -20,7 +20,7 @@ namespace PokerPuzzleData.DB.Repository
                 .Include(g => g.Players)
                 .Include(g => g.Actions)
                 .Include(g => g.CommunityCards)
-                .Where(g => g.HasFlop);
+                .Where(g => g.HasShowdown);
         }
 
         public GameEntity GetGame(int gameId)

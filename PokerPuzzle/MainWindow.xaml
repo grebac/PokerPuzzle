@@ -43,15 +43,16 @@
 
             <!--PLAYER HANDS-->
             <MyView:PlayerHand Canvas.Left="1490" Canvas.Top="299" DataContext="{Binding Players[8]}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-            <MyView:PlayerHand Canvas.Left="1490" Canvas.Top="675" HorizontalAlignment="Left" VerticalAlignment="Center" DataContext="{Binding Players[0]}"/>
-            <MyView:PlayerHand Canvas.Left="1145" Canvas.Top="854" HorizontalAlignment="Left" VerticalAlignment="Top" DataContext="{Binding Players[1]}"/>
-            <MyView:PlayerHand Canvas.Top="854" HorizontalAlignment="Left" VerticalAlignment="Top" DataContext="{Binding Players[2]}" Canvas.Left="797"/>
-            <MyView:PlayerHand Canvas.Left="421" Canvas.Top="854" HorizontalAlignment="Left" VerticalAlignment="Top" DataContext="{Binding Players[3]}"/>
-            <MyView:PlayerHand Canvas.Left="65" Canvas.Top="668" HorizontalAlignment="Center" VerticalAlignment="Top" DataContext="{Binding Players[4]}"/>
-            <MyView:PlayerHand Canvas.Left="70" Canvas.Top="299" HorizontalAlignment="Left" VerticalAlignment="Top" DataContext="{Binding Players[5]}"/>
-            <MyView:PlayerHand Canvas.Left="467" Canvas.Top="10" HorizontalAlignment="Left" VerticalAlignment="Center" DataContext="{Binding Players[6]}"/>
-            <MyView:PlayerHand Canvas.Left="1033" Canvas.Top="10" HorizontalAlignment="Left" VerticalAlignment="Top" DataContext="{Binding Players[7]}"/>
-            <Image x:Name="Button" Source="pack://application:,,,/Ressources/button.png" Height="68" Width="70" Canvas.Top="313" Canvas.Left="1332"/>
+            <MyView:PlayerHand Canvas.Left="1490" Canvas.Top="675" HorizontalAlignment="Left" VerticalAlignment="Center" DataContext="{Binding Players[9]}"/>
+            <MyView:PlayerHand Canvas.Left="1145" Canvas.Top="854" HorizontalAlignment="Left" VerticalAlignment="Top" DataContext="{Binding Players[0]}"/>
+            <MyView:PlayerHand Canvas.Top="854" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="797" DataContext="{Binding Players[1]}"/>
+            <MyView:PlayerHand Canvas.Left="421" Canvas.Top="854" HorizontalAlignment="Left" VerticalAlignment="Top" DataContext="{Binding Players[2]}"/>
+            <MyView:PlayerHand Canvas.Left="65" Canvas.Top="668" HorizontalAlignment="Center" VerticalAlignment="Top" DataContext="{Binding Players[3]}"/>
+            <MyView:PlayerHand Canvas.Left="70" Canvas.Top="299" HorizontalAlignment="Left" VerticalAlignment="Top" DataContext="{Binding Players[4]}"/>
+            <MyView:PlayerHand Canvas.Left="421" Canvas.Top="10" HorizontalAlignment="Left" VerticalAlignment="Center" DataContext="{Binding Players[5]}"/>
+            <MyView:PlayerHand Canvas.Left="797" Canvas.Top="10" HorizontalAlignment="Left" VerticalAlignment="Center" DataContext="{Binding Players[6]}"/>
+            <MyView:PlayerHand Canvas.Left="1145" Canvas.Top="10" HorizontalAlignment="Left" VerticalAlignment="Center" DataContext="{Binding Players[7]}"/>
+            <Image x:Name="Button" Source="pack://application:,,,/Ressources/button.png" Height="68" Width="70" Canvas.Top="299" Canvas.Left="1449"/>
 
             <Grid x:Name="GameStateControlGrid" Canvas.Left="1450" Canvas.Top="1041" Height="150" Width="300">
                 <Grid.RowDefinitions>
