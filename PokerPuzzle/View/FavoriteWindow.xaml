@@ -3,10 +3,19 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:VM="clr-namespace:PokerPuzzle.VM"
         xmlns:local="clr-namespace:PokerPuzzle.View"
+        xmlns:Converter="clr-namespace:PokerPuzzle.View.Converters"
         mc:Ignorable="d"
-        Title="FavoriteWindow" Height="450" Width="800">
+        Title="FavoriteWindow" Height="860" Width="1200">
 
+    <d:Window.DataContext>
+        <VM:FavoriteGamesVM/>
+    </d:Window.DataContext>
+    <Window.Resources>
+        <Converter:CardEnumToImageConverter x:Key="EnumToImage"/>
+    </Window.Resources>
+    
     <Grid Margin="10">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -22,22 +31,68 @@
                    Margin="0,0,0,10"/>
 
         <!-- Liste des favoris -->
-        <DataGrid Grid.Row="1" 
-                  x:Name="FavoritesGrid"
-                  AutoGenerateColumns="False"
-                  CanUserAddRows="False"
-                  SelectionMode="Single"
-                  MouseDoubleClick="FavoritesGrid_MouseDoubleClick">
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="Game Index" 
-                                    Binding="{Binding GameIndex}" 
-                                    Width="100"
-                                    IsReadOnly="True"/>
-                <DataGridTextColumn Header="Comment" 
-                                    Binding="{Binding Comment, UpdateSourceTrigger=PropertyChanged}" 
-                                    Width="*"/>
-            </DataGrid.Columns>
-        </DataGrid>
+        <ListView Grid.Row="1" ItemsSource="{Binding Games}" SelectedItem="{Binding SelectedGame}">
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">
+                    <Setter Property="HorizontalContentAlignment" Value="Center" />
+                </Style>
+            </ListView.ItemContainerStyle>
+            <ListView.View>
+                <GridView>
+
+                    <!-- Game ID -->
+                    <GridViewColumn Header="Game"
+                            Width="80"
+                            DisplayMemberBinding="{Binding GameId}"/>
+
+                    <!-- Flop cards -->
+                    <GridViewColumn Header="Community Cards" Width="500">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <ItemsControl ItemsSource="{Binding FlopCards}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <StackPanel Orientation="Horizontal"/>
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Image Width="80"
+                                           Height="120"
+                                           Margin="2"
+                                           Source="{Binding Converter={StaticResource EnumToImage}}"
+                                           SnapsToDevicePixels="True"
+                                           UseLayoutRounding="True"
+                                           RenderOptions.BitmapScalingMode="HighQuality"/>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+                    <!-- Final pot -->
+                    <GridViewColumn Header="Pot" Width="90" DisplayMemberBinding="{Binding FinalPotSize}" />
+
+                    <!-- Players -->
+                    <GridViewColumn Header="Players" Width="70" DisplayMemberBinding="{Binding PlayerCount}" />
+
+                    <!-- Comment (future, eats remaining space) -->
+                    <GridViewColumn Header="Comment" Width="400">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <!--Text="{Binding Comment}"-->
+                                <TextBlock Text="Todo" 
+                                   Foreground="Gray"
+                                   TextTrimming="CharacterEllipsis"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+                </GridView>
+            </ListView.View>
+        </ListView>
 
         <!-- Boutons -->
         <StackPanel Grid.Row="2" 
@@ -47,10 +102,10 @@
             <Button Content="Remove" 
                     Width="80" 
                     Margin="0,0,10,0"
-                    Click="RemoveButton_Click"/>
-            <Button Content="Close" 
-                    Width="80" 
-                    Click="CloseButton_Click"/>
+                    Command="{Binding RemoveFavoriteCommand}"/>
+            <!--<Button Content="Close" 
+                    Width="80"
+                    Command="{Binding LoadGameCommand}"/>-->
         </StackPanel>
     </Grid>
 </Window>

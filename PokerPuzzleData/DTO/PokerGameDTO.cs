@@ -3,12 +3,10 @@ using PokerPuzzleData.JSON;
 
 namespace PokerPuzzleData.DTO
 {
-    // TODO - Split this class with a "CommunityDTO"
-    // "CommunityDTO" will hold community cards and pot size at each street
     public class PokerGameDTO
     {
         public int GameId { get; set; }
-        public Dictionary<string, PlayerHandDTO> Players { get; set; } // TODO - Remove the string
+        public Dictionary<string, PlayerHandDTO> Players { get; set; } // TODO - Remove the string it is an int. Currently I quick fixed it by using GameId.toString()
         public CommunityDTO Community { get; set; }
         public List<GameActionDTO> GameActions { get; set; }
         public PokerGameDTO(int gameId, CommunityDTO community, Dictionary<string, PlayerHandDTO> players, List<GameActionDTO> actions) {

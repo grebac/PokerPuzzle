@@ -17,10 +17,10 @@ namespace PokerPuzzle.VM
     public class GameVM : INotifyPropertyChanged
     {
         #region attributes
-        private ObservableCollection<GameActionDTO> Actions { get; set; } // TODO - Weird useless warning. I will create a new ObservableCollection but out of the main.
+        private ObservableCollection<GameActionDTO> Actions { get; set; }
         private int _cursor;
         private int _gameId;
-        private CommunityCardsVM _communityCards; // TODO - Use only one instance that you 
+        private CommunityCardsVM _communityCards;
         private GameRepository _gameRepository;
         #endregion
 
@@ -80,7 +80,7 @@ namespace PokerPuzzle.VM
         }
 
         #region GetGame
-        public void SetupGame(int id) // TODO - id should be a string
+        public void SetupGame(int id)
         {
             var gameEntity = _gameRepository.GetGame(id);
             if (gameEntity == null) {
@@ -225,21 +225,18 @@ namespace PokerPuzzle.VM
         // Open Favorites window
         private void OpenFavoritesMethod()
         {
-            var favorites = FavoritesGameHelper.LoadFavorites();
-            var favoritesWindow = new FavoriteWindow(favorites);
+            var favoriteVM = new FavoriteGamesVM();
+            var favoritesWindow = new FavoriteWindow(favoriteVM);
 
-            if (favoritesWindow.ShowDialog() == true)
+            // Show window
+            favoritesWindow.ShowDialog();
+
+            // TODO - What if user closes the window (does not want to select
+            var selectedGame = favoriteVM.SelectedGame;
+            if (selectedGame != null)
             {
-                // User selected a game
-                var selectedIndex = favoritesWindow.SelectedGameIndex;
-                if (selectedIndex.HasValue)
-                {
-                    SetupGame(selectedIndex.Value);
-                }
+                SetupGame(selectedGame.GameId);
             }
-            // Save updates
-            var updatedFavorites = favoritesWindow.GetUpdatedFavorites();
-            FavoritesGameHelper.SaveFavorites(updatedFavorites);
         }
 
         private void AddToFavorites()

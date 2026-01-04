@@ -8,56 +8,71 @@ namespace PokerPuzzle.IO
 {
     public static class FavoritesGameHelper
     {
-        private static readonly string FavoritesPath = Path.Combine(
-            AppContext.BaseDirectory,
-            "favorites.json");
+        private static readonly string FavoritesPath =
+            Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                "PokerPuzzle",
+                "favorites.json");
+
+        private static Dictionary<int, string>? _cache;
+
+        static FavoritesGameHelper()
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(FavoritesPath)!);
+        }
 
         public static Dictionary<int, string> LoadFavorites()
         {
-            if (!File.Exists(FavoritesPath)) {
-                return new Dictionary<int, string>();
-            }
+            if (_cache != null)
+                return _cache;
+
+            if (!File.Exists(FavoritesPath))
+                return _cache = new Dictionary<int, string>();
 
             try
             {
                 var json = File.ReadAllText(FavoritesPath);
-                return JsonSerializer.Deserialize<Dictionary<int, string>>(json)
-                       ?? new Dictionary<int, string>();
+                _cache = JsonSerializer.Deserialize<Dictionary<int, string>>(json)
+                         ?? new Dictionary<int, string>();
             }
             catch
             {
-                // Si le fichier est corrompu, on repart de zéro
-                return new Dictionary<int, string>();
+                _cache = new Dictionary<int, string>();
             }
+
+            return _cache;
         }
 
-        public static void SaveFavorites(Dictionary<int, string> favorites)
+        public static void SaveFavorites()
         {
-            var json = JsonSerializer.Serialize(favorites, new JsonSerializerOptions
+            if (_cache == null) return;
+
+            var json = JsonSerializer.Serialize(_cache, new JsonSerializerOptions
             {
                 WriteIndented = true
             });
+
             File.WriteAllText(FavoritesPath, json);
         }
 
-        public static void AddFavorite(int gameIndex, string comment)
+        public static void AddFavorite(int gameId, string comment = "")
         {
             var favorites = LoadFavorites();
-            favorites[gameIndex] = comment;
-            SaveFavorites(favorites);
+            favorites[gameId] = comment;
+            SaveFavorites();
         }
 
-        public static void RemoveFavorite(int gameIndex)
+        public static void RemoveFavorite(int gameId)
         {
             var favorites = LoadFavorites();
-            favorites.Remove(gameIndex);
-            SaveFavorites(favorites);
+            if (favorites.Remove(gameId))
+                SaveFavorites();
         }
 
-        public static bool IsFavorite(int gameIndex)
-        {
-            var favorites = LoadFavorites();
-            return favorites.ContainsKey(gameIndex);
-        }
+        public static bool IsFavorite(int gameId)
+            => LoadFavorites().ContainsKey(gameId);
+
+        public static string? GetComment(int gameId)
+            => LoadFavorites().TryGetValue(gameId, out var c) ? c : null;
     }
 }

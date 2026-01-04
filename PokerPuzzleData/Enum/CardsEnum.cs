@@ -2,8 +2,6 @@
 using System.Reflection;
 using System.ComponentModel;
 
-// TODO - This CardsEnum file is copied from the main projet. There could technically be a split between theses.
-// There's also a UI component with the image path, while this is a library project.
 namespace PokerPuzzleData.DTO
 {
     // Custom Attribute to match the data's code to C#'s enum
@@ -209,6 +207,69 @@ namespace PokerPuzzleData.DTO
                 }
             }
             return CardsEnum.CardBack; // Default return
+        }
+
+        // Converts back from enum to code - Use case: it's easier to get the card number and color this way because enum is just a number while string is 2 characters holding each one information
+        public static string FromEnumToCode(CardsEnum card)
+        {
+            var field = typeof(CardsEnum).GetField(card.ToString());
+            if (field == null)
+                throw new ArgumentException($"Invalid card enum value: {card}");
+
+            var attr = field.GetCustomAttribute<CardCodeAttribute>();
+            if (attr == null)
+                throw new InvalidOperationException($"CardCodeAttribute missing on {card}");
+
+            return attr.Code;
+        }
+
+        // Returns an emoji based representation of the card
+        public static string ToUnicode(CardsEnum card)
+        {
+            if (card == CardsEnum.CardBack)
+                return "🂠";
+
+            string code = FromEnumToCode(card);
+            return ToUnicode(code);
+        }
+
+        public static string ToUnicode(string card)
+        {
+            if (string.IsNullOrWhiteSpace(card) || card.Length < 2)
+                return string.Empty;
+
+            char rank = card[0];
+            char suit = card[1];
+
+            int suitBase = suit switch
+            {
+                's' => 0x1F0A0,
+                'h' => 0x1F0B0,
+                'd' => 0x1F0C0,
+                'c' => 0x1F0D0,
+                _ => throw new ArgumentException($"Unknown suit: {suit}")
+            };
+
+            int rankOffset = rank switch
+            {
+                'A' => 0x1,
+                '2' => 0x2,
+                '3' => 0x3,
+                '4' => 0x4,
+                '5' => 0x5,
+                '6' => 0x6,
+                '7' => 0x7,
+                '8' => 0x8,
+                '9' => 0x9,
+                'T' => 0xA,
+                'J' => 0xB,
+                'Q' => 0xD,
+                'K' => 0xE,
+                _ => throw new ArgumentException($"Unknown rank: {rank}")
+            };
+
+            int codePoint = suitBase + rankOffset;
+            return char.ConvertFromUtf32(codePoint);
         }
     }
 }
