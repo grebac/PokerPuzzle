@@ -32,9 +32,7 @@ namespace PokerPuzzle.VM
                 OnPropertyChanged(nameof(CommunityCards));
             } 
         }
-        #region Players
         public ObservableCollection<PlayerHandVM> Players { get; }
-        #endregion
         public ICommand PreflopCommand { get; }
         public ICommand FlopCommand { get; }
         public ICommand TurnCommand { get; }
@@ -57,6 +55,7 @@ namespace PokerPuzzle.VM
         public int GameId { get { return _gameId; } set { _gameId = value; OnPropertyChanged(nameof(GameId)); } }
         public ICommand OpenFavorites {  get; }
         public ICommand AddToFavorties { get; }
+        public ICommand RevealAll {  get; }
         #endregion
 
         public GameVM() {
@@ -73,8 +72,9 @@ namespace PokerPuzzle.VM
             RandomGame = new RelayCommand(GetRandomGame);
             OpenFavorites = new RelayCommand(OpenFavoritesMethod);
             AddToFavorties = new RelayCommand(AddToFavorites);
+            RevealAll = new RelayCommand<bool>(SetAllCardsVisibility);
             Players = new ObservableCollection<PlayerHandVM>();
-            _gameRepository = new GameRepository(new PokerPuzzleContext());
+            _gameRepository = new GameRepository();
 
             GetRandomGame();
         }
@@ -149,6 +149,12 @@ namespace PokerPuzzle.VM
                 // Update player if need be
                 int playerPosition = action.PlayerPosition;
                 Players[playerPosition - 1].UndoAction(action.Action);
+            }
+        }
+
+        private void SetAllCardsVisibility(bool visibility) {
+            foreach(var player in Players){
+                player.SetCardVisibility(visibility);
             }
         }
 
@@ -228,10 +234,8 @@ namespace PokerPuzzle.VM
             var favoriteVM = new FavoriteGamesVM();
             var favoritesWindow = new FavoriteWindow(favoriteVM);
 
-            // Show window
             favoritesWindow.ShowDialog();
 
-            // TODO - What if user closes the window (does not want to select
             var selectedGame = favoriteVM.SelectedGame;
             if (selectedGame != null)
             {

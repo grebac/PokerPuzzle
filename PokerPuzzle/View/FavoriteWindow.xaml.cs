@@ -20,10 +20,25 @@ namespace PokerPuzzle.View
     /// </summary>
     public partial class FavoriteWindow : Window
     {
+        private bool closedBySelection = false;
         public FavoriteWindow(FavoriteGamesVM vm)
         {
             InitializeComponent();
             this.DataContext = vm;
+        }
+
+        private void OnItemDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            closedBySelection = true;
+            this.Close();
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (!closedBySelection && DataContext is FavoriteGamesVM vm)
+            {
+                vm.SelectedGame = null;
+            }
         }
     }
 }

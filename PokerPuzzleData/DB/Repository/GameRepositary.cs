@@ -10,36 +10,38 @@ namespace PokerPuzzleData.DB.Repository
 {
     public class GameRepository
     {
-        private readonly PokerPuzzleContext _db;
-
-        public GameRepository(PokerPuzzleContext db)
+        public GameRepository()
         {
-            _db = db;
         }
 
-        private IQueryable<GameEntity> GetGames() {
-            return _db.Games
-                .Include(g => g.Players)
-                .Include(g => g.Actions)
-                .Include(g => g.CommunityCards)
-                .Where(g => g.HasShowdown && g.Players.Count <= 10);
+        public GameEntity? GetGame(int gameId)
+        {
+            using (var _db = new PokerPuzzleContext())
+            {
+                return _db.Games
+                    .Include(g => g.Players)
+                    .Include(g => g.Actions)
+                    .Include(g => g.CommunityCards)
+                    .Where(g => g.HasShowdown && g.Players.Count <= 10)
+                    .FirstOrDefault(g => g.GameId == gameId);
+            }
         }
 
-        public GameEntity GetGame(int gameId)
+        public GameEntity? GetRandomGame()
         {
-            return GetGames().FirstOrDefault(g => g.GameId == gameId);
-        }
-
-        public GameEntity GetRandomGame()
-        {
-            var games = GetGames();
-
-            return games
-                .Include(g => g.Players)
-                .Include(g => g.Actions)
-                .Include(g => g.CommunityCards)
-                .OrderBy(x => EF.Functions.Random())
-                .FirstOrDefault();
+            using (var _db = new PokerPuzzleContext())
+            {
+                return _db.Games
+                    .Include(g => g.Players)
+                    .Include(g => g.Actions)
+                    .Include(g => g.CommunityCards)
+                    .Where(g => g.HasShowdown && g.Players.Count <= 10)
+                    .Include(g => g.Players)
+                    .Include(g => g.Actions)
+                    .Include(g => g.CommunityCards)
+                    .OrderBy(x => EF.Functions.Random())
+                    .FirstOrDefault();
+            }
         }
 
         private IEnumerable<GameSummaryDTO> _filterGameSummary(IEnumerable<GameEntity> games) {
@@ -59,26 +61,50 @@ namespace PokerPuzzleData.DB.Repository
                         CardHelper.fromCodeToEnum(g.CommunityCards.River)
                     },
                     isConnectedFlop: false, // TODO - Implement helper function
-                    isPairedFlop: false // TODO
+                    isPairedFlop: false, // TODO
+                    g.GameComment?.Text
                 ));
         }
 
-        public IEnumerable<GameSummaryDTO> GetGameSummaries(List<int> ids) {
-            var favoriteGames = _db.Games
-                .Include(g => g.CommunityCards)
-                .Include(g => g.Players)
-                .Include(g => g.Actions)
-                .Where(g => ids.Contains(g.GameId));
-            return _filterGameSummary(favoriteGames);
+        public IList<GameSummaryDTO> GetGameSummaries(List<int> ids) {
+            using (var _db = new PokerPuzzleContext())
+            {
+                var favoriteGames = _db.Games
+                    .Include(g => g.CommunityCards)
+                    .Include(g => g.Players)
+                    .Include(g => g.Actions)
+                    .Include(g => g.GameComment)
+                    .Where(g => ids.Contains(g.GameId));
+                return _filterGameSummary(favoriteGames).ToList();
+            }
         }
 
         public GameSummaryDTO GetGameSummary(int id) {
-            var game = _db.Games
-                .Include(g => g.CommunityCards)
-                .Include(g => g.Players)
-                .Include(g => g.Actions)
-                .Where(g => g.GameId == id);
-            return _filterGameSummary(game).FirstOrDefault();
+            using (var _db = new PokerPuzzleContext())
+            {
+                var game = _db.Games
+                    .Include(g => g.CommunityCards)
+                    .Include(g => g.Players)
+                    .Include(g => g.Actions)
+                    .Where(g => g.GameId == id);
+                return _filterGameSummary(game).FirstOrDefault();
+            }
+        }
+
+        public void updateComment(int gameId, string content) {
+            using (var _db = new PokerPuzzleContext())
+            {
+                var comment = _db.GameComments.Where(c => c.GameId == gameId).FirstOrDefault();
+                if (comment == null)
+                {
+                    comment = new GameCommentEntity() { GameId = gameId, CreatedAt = DateTime.Now, Text = content };
+                    _db.GameComments.Add(comment);
+                } else {
+                    comment.Text = content;
+                    comment.CreatedAt = DateTime.Now;
+                }
+                _db.SaveChanges();
+            }
         }
     }
 }

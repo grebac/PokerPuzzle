@@ -12,10 +12,11 @@
     <Window.DataContext>
         <VM:GameVM/>
     </Window.DataContext>
+
     <Viewbox Stretch="Uniform">
         <Canvas Width="1800" Height="1200">
             <Canvas.Background>
-                <ImageBrush ImageSource="/Ressources/table.png"/>
+                <ImageBrush ImageSource="pack://application:,,,/Ressources/table.png"/>
             </Canvas.Background>
 
             <!--Random Game Accessor-->
@@ -52,22 +53,11 @@
             <MyView:PlayerHand Canvas.Left="421" Canvas.Top="10" HorizontalAlignment="Left" VerticalAlignment="Center" DataContext="{Binding Players[7]}"/>
             <MyView:PlayerHand Canvas.Left="797" Canvas.Top="10" HorizontalAlignment="Left" VerticalAlignment="Center" DataContext="{Binding Players[8]}"/>
             <MyView:PlayerHand Canvas.Left="1145" Canvas.Top="10" HorizontalAlignment="Left" VerticalAlignment="Center" DataContext="{Binding Players[9]}"/>
-            <Image x:Name="Button" Source="pack://application:,,,/Ressources/button.png" Height="68" Width="70" Canvas.Top="299" Canvas.Left="1449"/>
+            <Image x:Name="SB" Source="pack://application:,,,/Ressources/SB.png" Height="68" Width="70" Canvas.Top="474" Canvas.Left="1480" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+            <Image x:Name="BB" Source="pack://application:,,,/Ressources/BB.png" Height="68" Width="70" Canvas.Top="782" Canvas.Left="1480" HorizontalAlignment="Center" VerticalAlignment="Top"/>
 
-            <Grid x:Name="GameStateControlGrid" Canvas.Left="1450" Canvas.Top="1041" Height="150" Width="300">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                </Grid.ColumnDefinitions>
-
-                <Grid.Resources>
+            <StackPanel Canvas.Left="1450" Canvas.Top="1041" Orientation="Horizontal">
+                <StackPanel.Resources>
                     <Style x:Key="StreetButtonStyle" TargetType="Button">
                         <Setter Property="Background" Value="#2A2A2A"/>
                         <Setter Property="Foreground" Value="#E8D4A0"/>
@@ -93,20 +83,67 @@
                     <Style x:Key="PlayButtonStyle" TargetType="Button" BasedOn="{StaticResource NavigationButtonStyle}">
                         <Setter Property="Background" Value="#2D5A2D"/>
                     </Style>
-                </Grid.Resources>
+                    
+                    <Style x:Key="RevealAllIconButtonStyle" TargetType="ToggleButton">
+                        <Setter Property="Width" Value="44"/>
+                        <Setter Property="Height" Value="44"/>
+                        <Setter Property="Padding" Value="0"/>
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="ToggleButton">
+                                    <Border x:Name="border" Background="#FFEFEBE1" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1" CornerRadius="8">
+                                        <Image x:Name="Icon" Source="pack://application:,,,/Ressources/visible.png"/>
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsChecked" Value="True">
+                                            <Setter TargetName="Icon" Property="Source" Value="pack://application:,,,/Ressources/visible.png"/>
+                                        </Trigger>
 
-                <Button x:Name="PreflopButton" Content="Preflop" Style="{StaticResource StreetButtonStyle}" Command="{Binding PreflopCommand}" CommandParameter="{x:Static enums:StreetEnum.Preflop}"/>
-                <Button x:Name="FlopButton" Content="Flop"  Grid.Column="1" Style="{StaticResource StreetButtonStyle}" Command="{Binding FlopCommand}" CommandParameter="{x:Static enums:StreetEnum.Flop}"/>
-                <Button x:Name="TurnButton" Content="Turn" Grid.Column="2" Style="{StaticResource StreetButtonStyle}" Command="{Binding TurnCommand}" CommandParameter="{x:Static enums:StreetEnum.Turn}"/>
-                <Button x:Name="RiverButton" Content="River"  Grid.Column="3" Style="{StaticResource StreetButtonStyle}" Command="{Binding RiverCommand}" CommandParameter="{x:Static enums:StreetEnum.River}"/>
-                <Button x:Name="ShowdownButton" Content="Showdown" Grid.Column="4" Style="{StaticResource StreetButtonStyle}" Command="{Binding ShowdownCommand}" CommandParameter="{x:Static enums:StreetEnum.Showdown}"/>
+                                        <Trigger Property="IsChecked" Value="False">
+                                            <Setter TargetName="Icon" Property="Source" Value="pack://application:,,,/Ressources/invisible.png"/>
+                                        </Trigger>
 
-                <Button x:Name="PreviousStateButton" Content="⏮" Grid.Row="1" Grid.Column="0" Style="{StaticResource NavigationButtonStyle}" Command="{Binding PreviousStreetCommand}"/>
-                <Button x:Name="PreviousActionButton" Content="◀" Grid.Row="1" Grid.Column="1" Style="{StaticResource NavigationButtonStyle}" Command="{Binding PreviousActionCommand}"/>
-                <Button x:Name="PlayPauseButton" Content="▶" Grid.Row="1" Grid.Column="2" Style="{StaticResource PlayButtonStyle}" Visibility="Hidden"/>
-                <Button x:Name="NextActionButton" Content="▶" Grid.Row="1" Grid.Column="3" Style="{StaticResource NavigationButtonStyle}" Command="{Binding NextActionCommand}"/>
-                <Button x:Name="NextStateButton" Content="⏭" Grid.Row="1" Grid.Column="4" Style="{StaticResource NavigationButtonStyle}" Command="{Binding NextStreetCommand}"/>
-            </Grid>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Opacity" Value="0.85"/>
+                                        </Trigger>
+
+                                        <Trigger Property="IsPressed" Value="True">
+                                            <Setter Property="Opacity" Value="0.65"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </StackPanel.Resources>
+                <Grid x:Name="GameStateControlGrid" Height="150" Width="300">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+
+                    <Button x:Name="PreflopButton" Content="Preflop" Style="{StaticResource StreetButtonStyle}" Command="{Binding PreflopCommand}" CommandParameter="{x:Static enums:StreetEnum.Preflop}"/>
+                    <Button x:Name="FlopButton" Content="Flop"  Grid.Column="1" Style="{StaticResource StreetButtonStyle}" Command="{Binding FlopCommand}" CommandParameter="{x:Static enums:StreetEnum.Flop}"/>
+                    <Button x:Name="TurnButton" Content="Turn" Grid.Column="2" Style="{StaticResource StreetButtonStyle}" Command="{Binding TurnCommand}" CommandParameter="{x:Static enums:StreetEnum.Turn}"/>
+                    <Button x:Name="RiverButton" Content="River"  Grid.Column="3" Style="{StaticResource StreetButtonStyle}" Command="{Binding RiverCommand}" CommandParameter="{x:Static enums:StreetEnum.River}"/>
+                    <Button x:Name="ShowdownButton" Content="Showdown" Grid.Column="4" Style="{StaticResource StreetButtonStyle}" Command="{Binding ShowdownCommand}" CommandParameter="{x:Static enums:StreetEnum.Showdown}"/>
+
+                    <Button x:Name="PreviousStateButton" Content="⏮" Grid.Row="1" Grid.Column="0" Style="{StaticResource NavigationButtonStyle}" Command="{Binding PreviousStreetCommand}"/>
+                    <Button x:Name="PreviousActionButton" Content="◀" Grid.Row="1" Grid.Column="1" Style="{StaticResource NavigationButtonStyle}" Command="{Binding PreviousActionCommand}"/>
+                    <Button x:Name="PlayPauseButton" Content="▶" Grid.Row="1" Grid.Column="2" Style="{StaticResource PlayButtonStyle}" Visibility="Hidden"/>
+                    <Button x:Name="NextActionButton" Content="▶" Grid.Row="1" Grid.Column="3" Style="{StaticResource NavigationButtonStyle}" Command="{Binding NextActionCommand}"/>
+                    <Button x:Name="NextStateButton" Content="⏭" Grid.Row="1" Grid.Column="4" Style="{StaticResource NavigationButtonStyle}" Command="{Binding NextStreetCommand}"/>
+                </Grid>
+
+                <ToggleButton Style="{StaticResource RevealAllIconButtonStyle}" Command="{Binding RevealAll}" CommandParameter="{Binding IsChecked, RelativeSource={RelativeSource Self}}"/>
+            </StackPanel>
         </Canvas>
     </Viewbox>
 </Window>

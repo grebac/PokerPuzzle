@@ -1,4 +1,5 @@
-﻿using PokerPuzzleData.DTO;
+﻿using PokerPuzzleData.DB.Repository;
+using PokerPuzzleData.DTO;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -8,10 +9,22 @@ namespace PokerPuzzle.VM
 {
     public class GameSummaryVM
     {
+        static private GameRepository rep = new GameRepository();
+        private string _comment;
         public int GameId { get; }
 
         public int PlayerCount { get; }
         public int FinalPotSize { get; }
+        public string Comment { 
+            get => _comment; 
+            set {
+                if (_comment == value) return;
+
+                _comment = value;
+                
+                rep.updateComment(GameId, _comment);
+            } 
+        }
 
         public string StreetsReached =>
             ReachedRiver ? "River" :
@@ -19,7 +32,7 @@ namespace PokerPuzzle.VM
             ReachedFlop ? "Flop" :
             "Preflop";
 
-        public string FlopUnicode { get; }
+        
         public ObservableCollection<CardsEnum> FlopCards { get; }
 
         public GameSummaryVM(GameSummaryDTO dto)
@@ -27,16 +40,13 @@ namespace PokerPuzzle.VM
             GameId = dto.GameId;
             PlayerCount = dto.PlayerCount;
             FinalPotSize = dto.FinalPotSize;
+            Comment = dto.Comment ?? "";
 
             ReachedFlop = dto.ReachedFlop;
             ReachedTurn = dto.ReachedTurn;
             ReachedRiver = dto.ReachedRiver;
 
             FlopCards = new(dto.CommunityCards);
-
-            FlopUnicode = dto.CommunityCards?.Count == 3
-            ? string.Join(" ", dto.CommunityCards.Select(CardHelper.ToUnicode))
-            : "-";
         }
 
         private bool ReachedFlop;

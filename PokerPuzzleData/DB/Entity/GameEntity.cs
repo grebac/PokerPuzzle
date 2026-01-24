@@ -18,6 +18,7 @@ namespace PokerPuzzleData.DB.Entity
         public ICollection<PlayerEntity> Players { get; set; } = new List<PlayerEntity>();
         public ICollection<ActionEntity> Actions { get; set; } = new List<ActionEntity>();
         public CommunityCardsEntity CommunityCards { get; set; } = null!;
+        public GameCommentEntity GameComment { get; set; } = null!;
     }
 
 }

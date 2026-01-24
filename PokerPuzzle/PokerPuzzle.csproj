@@ -16,7 +16,11 @@
     <None Remove="Ressources\Actions\check.png" />
     <None Remove="Ressources\Actions\fold.png" />
     <None Remove="Ressources\Actions\raise.png" />
+    <None Remove="Ressources\BB.png" />
     <None Remove="Ressources\Data\hands.json" />
+    <None Remove="Ressources\invisible.png" />
+    <None Remove="Ressources\SB.png" />
+    <None Remove="Ressources\visible.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -36,6 +40,9 @@
     <Resource Include="Ressources\Actions\check.png" />
     <Resource Include="Ressources\Actions\fold.png" />
     <Resource Include="Ressources\Actions\raise.png" />
+    <Resource Include="Ressources\BB.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="Ressources\button.png" />
     <Resource Include="Ressources\Cards\10_of_clubs.png" />
     <Resource Include="Ressources\Cards\10_of_diamonds.png" />
@@ -93,7 +100,16 @@
     <Resource Include="Ressources\Cards\queen_of_diamonds.png" />
     <Resource Include="Ressources\Cards\queen_of_hearts.png" />
     <Resource Include="Ressources\Cards\queen_of_spades.png" />
+    <Resource Include="Ressources\invisible.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Ressources\SB.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="Ressources\table.png" />
+    <Resource Include="Ressources\visible.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
 
   <ItemGroup>

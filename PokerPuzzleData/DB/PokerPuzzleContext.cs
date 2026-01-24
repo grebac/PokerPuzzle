@@ -2,6 +2,7 @@
 using PokerPuzzleData.DB.Entity;
 using System;
 using System.Collections.Generic;
+using System.Reflection.Emit;
 using System.Text;
 
 namespace PokerPuzzleData.DB
@@ -12,6 +13,7 @@ namespace PokerPuzzleData.DB
         public DbSet<PlayerEntity> Players { get; set; }
         public DbSet<ActionEntity> Actions { get; set; }
         public DbSet<CommunityCardsEntity> CommunityCards { get; set; }
+        public DbSet<GameCommentEntity> GameComments { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
@@ -57,6 +59,11 @@ namespace PokerPuzzleData.DB
                 .HasOne(c => c.Game)
                 .WithOne(g => g.CommunityCards)
                 .HasForeignKey<CommunityCardsEntity>(c => c.GameId);
+
+            model.Entity<GameCommentEntity>()
+                .HasOne(c => c.Game)
+                .WithOne(g => g.GameComment)
+                .HasForeignKey<GameCommentEntity>(c => c.GameId);
         }
     }
 }

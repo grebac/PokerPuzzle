@@ -73,6 +73,7 @@ namespace PokerPuzzle.VM
                 _areCardsVisible = value;
                 OnPropertyChanged(nameof(Card1Path));
                 OnPropertyChanged(nameof(Card2Path));
+                OnPropertyChanged(nameof(AreCardsVisible));
             }
         }
 
@@ -84,6 +85,11 @@ namespace PokerPuzzle.VM
                 _isHidden = value;
                 OnPropertyChanged(nameof(IsHidden));
             }
+        }
+
+        public Visibility IsRevealable
+        {
+            get => (_card1 != CardsEnum.CardBack && _card2 != CardsEnum.CardBack) ? Visibility.Visible : Visibility.Hidden;
         }
 
         public ActionTypeEnum CurrentAction
@@ -117,13 +123,18 @@ namespace PokerPuzzle.VM
         #endregion
 
         #region Logique
-        // Méthode pour changer les cartes
         public void SetCards(CardsEnum card1, CardsEnum card2)
         {
             _card1 = card1;
             _card2 = card2;
             OnPropertyChanged(nameof(Card1Path));
             OnPropertyChanged(nameof(Card2Path));
+            OnPropertyChanged(nameof(IsRevealable));
+        }
+
+        public void SetCardVisibility(bool visibility)
+        {
+            AreCardsVisible = visibility;
         }
         #endregion
 

@@ -6,18 +6,54 @@
              xmlns:local="clr-namespace:PokerPuzzle.View"
              xmlns:VM="clr-namespace:PokerPuzzle.VM"
              mc:Ignorable="d" 
-             Width="300" Height="371"
-             d:DataContext="{d:DesignInstance Type=VM:PlayerHandVM}">
-    <Canvas Visibility="{Binding IsHidden}">
-        <Image x:Name="Card1" Height="210" Width="149" Canvas.Left="77" Canvas.Top="65" Source="{Binding Card1Path, Mode=OneWay}"/>
-        <Image x:Name="Card2" Height="210" Width="148" Canvas.Left="144" Canvas.Top="100" Source="{Binding Card2Path, Mode=OneWay}"/>
-        <Image x:Name="Action" Width="169" Height="64" Canvas.Top="10" Canvas.Left="74" HorizontalAlignment="Left" VerticalAlignment="Center" Stretch="None" Source="{Binding ActionPath, Mode=OneWay, TargetNullValue={x:Null}}"/>
+             Width="300" Height="371">
+    <UserControl.Resources>
+        <Style x:Key="EyeToggleButtonStyle" TargetType="ToggleButton">
+            <Setter Property="Width"  Value="32"/>
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToggleButton">
+                        <Border Background="{TemplateBinding Background}"
+                        CornerRadius="6">
+                            <Image x:Name="EyeImage" Source="pack://application:,,,/Ressources/invisible.png" Stretch="Uniform"/>
+                        </Border>
 
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="EyeImage" Property="Source" Value="pack://application:,,,/Ressources/visible.png"/>
+                            </Trigger>
 
-        <CheckBox x:Name="AreCardsVisibles" Content="Are Cards Visible?" Canvas.Left="44" Canvas.Top="313" Height="18" Width="120" IsChecked="{Binding AreCardsVisible}">
-            <CheckBox.LayoutTransform>
+                            <Trigger Property="IsChecked" Value="False">
+                                <Setter TargetName="EyeImage" Property="Source" Value="pack://application:,,,/Ressources/invisible.png"/>
+                            </Trigger>
+
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Opacity" Value="0.85"/>
+                            </Trigger>
+
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Opacity" Value="0.65"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+    
+    <Canvas Visibility="{Binding IsHidden}" d:Visibility="Visible">
+        <Image x:Name="Card1" Height="210" Width="149" Canvas.Left="77" Canvas.Top="65" Source="{Binding Card1Path, Mode=OneWay}" d:Source="pack://application:,,,/Ressources/Cards/10_of_clubs.png"/>
+        <Image x:Name="Card2" Height="210" Width="148" Canvas.Left="144" Canvas.Top="100" Source="{Binding Card2Path, Mode=OneWay}" d:Source="pack://application:,,,/Ressources/Cards/10_of_diamonds.png"/>
+        <Image x:Name="Action" Width="169" Height="64" Canvas.Top="10" Canvas.Left="74" HorizontalAlignment="Left" VerticalAlignment="Center" Stretch="None" Source="{Binding ActionPath, Mode=OneWay, TargetNullValue={x:Null}}" d:Source="pack://application:,,,/Ressources/Actions/bet.png"/>
+
+        <ToggleButton x:Name="AreCardsVisibles" Style="{StaticResource EyeToggleButtonStyle}" Canvas.Left="135" Canvas.Top="305" Height="22" Width="30" BorderThickness="0" IsChecked="{Binding AreCardsVisible}" Visibility="{Binding IsRevealable, FallbackValue=Hidden}" d:Visibility="Visible" Background="{x:Null}">
+            <ToggleButton.LayoutTransform>
                 <ScaleTransform ScaleX="2" ScaleY="2" />
-            </CheckBox.LayoutTransform>
-        </CheckBox>
+            </ToggleButton.LayoutTransform>
+        </ToggleButton>
     </Canvas>
 </UserControl>

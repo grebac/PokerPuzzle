@@ -20,6 +20,8 @@ namespace PokerPuzzleData.DTO
         public bool IsConnectedFlop { get; }
         public bool IsPairedFlop { get; }
 
+        public string? Comment { get; set; }
+
         public GameSummaryDTO(
             int gameId,
             int playerCount,
@@ -29,7 +31,8 @@ namespace PokerPuzzleData.DTO
             bool reachedRiver,
             List<CardsEnum> communityCards,
             bool isConnectedFlop,
-            bool isPairedFlop)
+            bool isPairedFlop,
+            string? comment)
         {
             GameId = gameId;
             PlayerCount = playerCount;
@@ -40,6 +43,7 @@ namespace PokerPuzzleData.DTO
             CommunityCards = communityCards;
             IsConnectedFlop = isConnectedFlop;
             IsPairedFlop = isPairedFlop;
+            Comment = comment;
         }
     }
 

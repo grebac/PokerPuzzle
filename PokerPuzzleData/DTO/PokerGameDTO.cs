@@ -15,15 +15,6 @@ namespace PokerPuzzleData.DTO
             Players = players;
             GameActions = actions;
         }
-        public PokerGameDTO(PokerGameJSON json) {
-            Community = new CommunityDTO(json);
-
-            Players = new Dictionary<string, PlayerHandDTO>();
-            foreach (var player in json.Players) {
-                Players.Add(player.Key, new PlayerHandDTO(player.Value));
-            }
-            GameActions = json.BuildGameActions();
-        }
         public static PokerGameDTO FromEntity(GameEntity entity)
         {
             return new PokerGameDTO(entity.GameId, 
@@ -36,6 +27,7 @@ namespace PokerPuzzleData.DTO
                     entity.Actions
                     .OrderBy(a => a.OrderIndex)
                     .Select(GameActionDTO.FromEntity)
+                    .Skip(2) // Skips SB and BB
                     .ToList());
         }
     }

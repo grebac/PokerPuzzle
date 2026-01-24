@@ -7,7 +7,7 @@
         xmlns:local="clr-namespace:PokerPuzzle.View"
         xmlns:Converter="clr-namespace:PokerPuzzle.View.Converters"
         mc:Ignorable="d"
-        Title="FavoriteWindow" Height="860" Width="1200">
+        Title="FavoriteWindow" Height="860" Width="1200" Closing="Window_Closing">
 
     <d:Window.DataContext>
         <VM:FavoriteGamesVM/>
@@ -35,6 +35,7 @@
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem">
                     <Setter Property="HorizontalContentAlignment" Value="Center" />
+                    <EventSetter Event="MouseDoubleClick" Handler="OnItemDoubleClick"/>
                 </Style>
             </ListView.ItemContainerStyle>
             <ListView.View>
@@ -82,10 +83,16 @@
                     <GridViewColumn Header="Comment" Width="400">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <!--Text="{Binding Comment}"-->
-                                <TextBlock Text="Todo" 
+                                <TextBox Text="{Binding Comment, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"
+                                   AcceptsReturn="True"
+                                   TextWrapping="Wrap"
                                    Foreground="Gray"
-                                   TextTrimming="CharacterEllipsis"/>
+                                   Background="Transparent"
+                                   BorderThickness="0"
+                                   MinHeight="100"
+                                   MinWidth="300"
+                                   TextAlignment="Center"
+                                   VerticalContentAlignment="Center"/>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
@@ -103,9 +110,6 @@
                     Width="80" 
                     Margin="0,0,10,0"
                     Command="{Binding RemoveFavoriteCommand}"/>
-            <!--<Button Content="Close" 
-                    Width="80"
-                    Command="{Binding LoadGameCommand}"/>-->
         </StackPanel>
     </Grid>
 </Window>
