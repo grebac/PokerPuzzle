@@ -8,7 +8,7 @@ namespace PokerPuzzleData.DB.Entity
     {
         public int GameId { get; set; }
         public string? ExternalGameId { get; set; }
-
+        public bool isFavorite { get; set; }
         public int NumPlayers { get; set; }
         public int FinalPot { get; set; }
         public bool HasFlop { get; set; }

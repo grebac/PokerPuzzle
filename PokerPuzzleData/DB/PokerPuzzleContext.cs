@@ -30,8 +30,13 @@ namespace PokerPuzzleData.DB
         protected override void OnModelCreating(ModelBuilder model)
         {
             // Game
-            model.Entity<GameEntity>()
-                .HasKey(g => g.GameId);
+            model.Entity<GameEntity>(entity =>
+            {
+                entity.HasKey(g => g.GameId);
+
+                entity.Property(g => g.isFavorite)
+                      .HasDefaultValue(false);
+            });
 
             // Player (composite key)
             model.Entity<PlayerEntity>()

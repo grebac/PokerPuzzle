@@ -88,7 +88,7 @@ namespace PokerPuzzle.VM
 
 
                 var filepath = dialog.FileName;
-                var importService = new GameImportService(new PokerPuzzleContext(), filepath);
+                var importService = new GameImportService(filepath);
 
                 var progress = new Progress<ImportProgress>(p =>
                 {

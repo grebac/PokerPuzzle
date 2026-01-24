@@ -14,6 +14,11 @@ namespace PokerPuzzle.View
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
+            MessageBox.Show(
+            "Database was setup. Please restart app.",
+            "Database setup",
+            MessageBoxButton.OK,
+            MessageBoxImage.Information);
             this.Close();
         }
     }

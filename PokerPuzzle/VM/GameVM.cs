@@ -1,5 +1,4 @@
-﻿using PokerPuzzle.IO;
-using PokerPuzzle.View;
+﻿using PokerPuzzle.View;
 using PokerPuzzleData.DB;
 using PokerPuzzleData.DB.Repository;
 using PokerPuzzleData.DTO;
@@ -56,6 +55,8 @@ namespace PokerPuzzle.VM
         public ICommand OpenFavorites {  get; }
         public ICommand AddToFavorties { get; }
         public ICommand RevealAll {  get; }
+        public ICommand DeleteDatabase { get; }
+        public ICommand OpenImportDatabase { get; }
         #endregion
 
         public GameVM() {
@@ -73,6 +74,8 @@ namespace PokerPuzzle.VM
             OpenFavorites = new RelayCommand(OpenFavoritesMethod);
             AddToFavorties = new RelayCommand(AddToFavorites);
             RevealAll = new RelayCommand<bool>(SetAllCardsVisibility);
+            DeleteDatabase = new RelayCommand(DeleteDatabaseFunction);
+            OpenImportDatabase = new RelayCommand(OpenImportDatabaseFunction);
             Players = new ObservableCollection<PlayerHandVM>();
             _gameRepository = new GameRepository();
 
@@ -251,8 +254,38 @@ namespace PokerPuzzle.VM
                 return;
             }
 
-            FavoritesGameHelper.AddFavorite(GameId, "No Comment yet");
+            GameRepository repo = new GameRepository();
+            repo.setFavorite(GameId, true);
             MessageBox.Show("Game added to favorites!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+        #endregion
+
+        #region Database
+        private void DeleteDatabaseFunction() {
+            var result = MessageBox.Show(
+                "This will permanently delete the local database.\n\nAre you sure?",
+                "Delete database",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Warning);
+
+            if (result != MessageBoxResult.Yes)
+                return;
+
+            GameRepository repo = new GameRepository();
+            repo.DeleteDatabase();
+
+            MessageBox.Show(
+                "Database deleted. The application will now close.",
+                "Database reset",
+                MessageBoxButton.OK,
+                MessageBoxImage.Information);
+
+            Application.Current.Shutdown();
+        }
+
+        private void OpenImportDatabaseFunction() {
+            DatabaseSetupWindow databaseSetup = new DatabaseSetupWindow();
+            databaseSetup.ShowDialog();
         }
         #endregion
 

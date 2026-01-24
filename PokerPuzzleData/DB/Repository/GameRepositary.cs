@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
 using PokerPuzzleData.DB.Entity;
 using PokerPuzzleData.DTO;
 using PokerPuzzleData.Enum;
@@ -41,6 +42,17 @@ namespace PokerPuzzleData.DB.Repository
                     .Include(g => g.CommunityCards)
                     .OrderBy(x => EF.Functions.Random())
                     .FirstOrDefault();
+            }
+        }
+
+        public List<GameEntity> GetFavoriteGames() {
+            using (var _db = new PokerPuzzleContext())
+            {
+                return _db.Games
+                    .Include(g => g.Players)
+                    .Include(g => g.Actions)
+                    .Include(g => g.CommunityCards)
+                    .Where(g => g.isFavorite).ToList();
             }
         }
 
@@ -105,6 +117,31 @@ namespace PokerPuzzleData.DB.Repository
                 }
                 _db.SaveChanges();
             }
+        }
+
+        public void setFavorite(int gameId, bool isFavorite)
+        {
+            using (var _db = new PokerPuzzleContext()) {
+                var game = _db.Games.Where(g => g.GameId == gameId).FirstOrDefault();
+                if (game == null) {
+                    return;
+                }
+                game.isFavorite = isFavorite;
+                _db.SaveChanges();
+            }
+        }
+
+        public void DeleteDatabase()
+        {
+            using var context = new PokerPuzzleContext();
+            var dbPath = context.Database.GetDbConnection().DataSource;
+
+            context.Dispose();
+            SqliteConnection.ClearAllPools();
+
+
+            if (File.Exists(dbPath))
+                File.Delete(dbPath);
         }
     }
 }

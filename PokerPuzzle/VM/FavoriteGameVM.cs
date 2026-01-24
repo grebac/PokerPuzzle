@@ -1,5 +1,4 @@
-﻿using PokerPuzzle.IO;
-using PokerPuzzleData.DB;
+﻿using PokerPuzzleData.DB;
 using PokerPuzzleData.DB.Repository;
 using System;
 using System.Collections.Generic;
@@ -20,18 +19,17 @@ namespace PokerPuzzle.VM
         {
             RemoveFavoriteCommand = new RelayCommand<GameSummaryVM>(RemoveGame);
 
-            var favorites = FavoritesGameHelper.LoadFavorites();
-            var favoritesGameIds = favorites.Keys.ToList();
-
             GameRepository repo = new GameRepository();
-            var summaries = repo.GetGameSummaries(favoritesGameIds);
+            var games = repo.GetFavoriteGames();
+            var summaries = repo.GetGameSummaries(games.Select(g => g.GameId).ToList());
 
             foreach (var summary in summaries)
                 Games.Add(new GameSummaryVM(summary));
         }
 
         private void RemoveGame(GameSummaryVM game) {
-            FavoritesGameHelper.RemoveFavorite(game.GameId);
+            GameRepository repo = new GameRepository();
+            repo.setFavorite(game.GameId, false);
         }
     }
 

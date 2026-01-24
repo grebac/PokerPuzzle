@@ -48,7 +48,30 @@
     <Canvas Visibility="{Binding IsHidden}" d:Visibility="Visible">
         <Image x:Name="Card1" Height="210" Width="149" Canvas.Left="77" Canvas.Top="65" Source="{Binding Card1Path, Mode=OneWay}" d:Source="pack://application:,,,/Ressources/Cards/10_of_clubs.png"/>
         <Image x:Name="Card2" Height="210" Width="148" Canvas.Left="144" Canvas.Top="100" Source="{Binding Card2Path, Mode=OneWay}" d:Source="pack://application:,,,/Ressources/Cards/10_of_diamonds.png"/>
-        <Image x:Name="Action" Width="169" Height="64" Canvas.Top="10" Canvas.Left="74" HorizontalAlignment="Left" VerticalAlignment="Center" Stretch="None" Source="{Binding ActionPath, Mode=OneWay, TargetNullValue={x:Null}}" d:Source="pack://application:,,,/Ressources/Actions/bet.png"/>
+        <Image x:Name="Action" Width="169" Height="64" Canvas.Top="10" Canvas.Left="74" HorizontalAlignment="Left" VerticalAlignment="Center" Stretch="None" Source="{Binding ActionPath, Mode=OneWay, TargetNullValue={x:Null}, NotifyOnTargetUpdated=True}" d:Source="pack://application:,,,/Ressources/Actions/bet.png">
+            <Image.RenderTransform>
+                <ScaleTransform CenterX="84" CenterY="32" />
+            </Image.RenderTransform>
+            <Image.Style>
+                <Style TargetType="Image">
+                    <Style.Triggers>
+                        <EventTrigger RoutedEvent="Binding.TargetUpdated">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleX"
+                                             To="1.05" Duration="0:0:0.1" AutoReverse="True" />
+                                    <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleY"
+                                             To="1.05" Duration="0:0:0.1" AutoReverse="True" />
+
+                                    <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                                             From="0.7" To="1.0" Duration="0:0:0.2" />
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Image.Style>
+        </Image>
 
         <ToggleButton x:Name="AreCardsVisibles" Style="{StaticResource EyeToggleButtonStyle}" Canvas.Left="135" Canvas.Top="305" Height="22" Width="30" BorderThickness="0" IsChecked="{Binding AreCardsVisible}" Visibility="{Binding IsRevealable, FallbackValue=Hidden}" d:Visibility="Visible" Background="{x:Null}">
             <ToggleButton.LayoutTransform>

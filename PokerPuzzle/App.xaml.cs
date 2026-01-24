@@ -16,7 +16,7 @@ namespace PokerPuzzle
             base.OnStartup(e);
 
             try {
-                GameImportService service = new GameImportService(new PokerPuzzleContext());
+                GameImportService service = new GameImportService();
                 service.EnsureDatabaseReady();
             }
             catch (FileNotFoundException) {
@@ -24,10 +24,6 @@ namespace PokerPuzzle
                 // A window pops-up to guide the user toward downloading the JSON data file
                 DatabaseSetupWindow databaseSetupWindow = new DatabaseSetupWindow();
                 databaseSetupWindow.ShowDialog();
-                
-                // Restart application
-                //Process.Start(Application.ResourceAssembly.Location);
-                //Application.Current.Shutdown();
             }
             catch (Exception ex) {
                 // Any other occasionnal exception

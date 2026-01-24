@@ -10,32 +10,35 @@ namespace PokerPuzzleData.Service
 {
     public class GameImportService
     {
-        private readonly PokerPuzzleContext _db;
         private readonly string _jsonPath;
 
-        public GameImportService(PokerPuzzleContext db, string ?jsonPath = null)
+        public GameImportService(string ?jsonPath = null)
         {
-            _db = db;
             _jsonPath = jsonPath ?? GetDefaultJsonPath();
         }
 
         public void EnsureDatabaseReady(IProgress<ImportProgress>? progress = null)
         {
-            // 1. Ensure schema
-            _db.Database.Migrate();
+            using (var _db = new PokerPuzzleContext())
+            {
+                // 1. Ensure schema
+                _db.Database.Migrate();
 
-            // 2. Fill only once
-            if (_db.Games.Any()) {
-                return;
+                // 2. Fill only once
+                if (_db.Games.Any())
+                {
+                    return;
+                }
+
+                // 3. Ensure JSON file exists
+                if (!Path.Exists(_jsonPath))
+                {
+                    throw new FileNotFoundException("Poker hand JSON file not found. Can't initialize the Database.", _jsonPath);
+                }
+
+                // 4. Import JSON data
+                ImportJSON(_db, progress);
             }
-
-            // 3. Ensure JSON file exists
-            if (!Path.Exists(_jsonPath)) {
-                throw new FileNotFoundException("Poker hand JSON file not found. Can't initialize the Database.", _jsonPath);
-            }
-
-            // 4. Import JSON data
-            ImportJSON(_db, progress);
         }
 
         private void ImportJSON(PokerPuzzleContext context, IProgress<ImportProgress>? progress = null) {
@@ -55,7 +58,7 @@ namespace PokerPuzzleData.Service
                 context.Games.Add(BuildGameEntity(game));
                 processed++;
 
-                if (processed % 1000 == 0)
+                if (processed % 10000 == 0)
                 {
                     context.SaveChanges();
                     context.ChangeTracker.Clear();
