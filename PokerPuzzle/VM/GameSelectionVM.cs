@@ -15,7 +15,7 @@ namespace PokerPuzzle.VM
         public GameSummaryVM? SelectedGame { get; set; }
 
         // -- Handle game pagination
-        private const int _pageSize = 10;
+        private const int _pageSize = 8;
         private int _pageNumber = 0;
         public int PageNumber { get => _pageNumber; 
             set 

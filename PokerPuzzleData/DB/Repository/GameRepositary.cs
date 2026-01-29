@@ -63,7 +63,7 @@ namespace PokerPuzzleData.DB.Repository
         }
 
         private IQueryable<GameSummaryDTO> _getFilteredGameSummary(BoardTexture filterCriteria, PokerPuzzleContext _db) {
-            var GameQuery = _db.Games.AsNoTracking().Where(g => (g.BoardTexture & filterCriteria) == filterCriteria);
+            var GameQuery = _db.Games.AsNoTracking().Where(g => g.HasShowdown && (g.BoardTexture & filterCriteria) == filterCriteria);
             var GameSummariesQuery = _filterGameSummary(GameQuery);
             return GameSummariesQuery;
         }
