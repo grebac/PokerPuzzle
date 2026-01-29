@@ -63,11 +63,14 @@ namespace PokerPuzzleData.Service
                     context.SaveChanges();
                     context.ChangeTracker.Clear();
                 }
-                progress?.Report(new ImportProgress(processed, total));
+                progress?.Report(new ImportProgress(processed, total, ImportPhaseEnum.ImportGames));
             }
 
             context.SaveChanges();
             transaction.Commit();
+
+            // Meta-data analysis on games
+            GameCaracteristicsAnalyzer.AnalyzeAllMissing();
         }
 
         private List<PokerGameJSON> LoadJSONGames(string path)
@@ -122,7 +125,7 @@ namespace PokerPuzzleData.Service
                 players.Add(new PlayerEntity
                 {
                     Position = playerJson.Position,
-
+                    Stack = playerJson.PotSize,
                     Card1 = playerJson.PocketCards.ElementAtOrDefault(0),
                     Card2 = playerJson.PocketCards.ElementAtOrDefault(1)
                 });

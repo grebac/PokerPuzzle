@@ -11,10 +11,9 @@ namespace PokerPuzzleData.DB.Repository
 {
     public class GameRepository
     {
-        public GameRepository()
-        {
-        }
+        public GameRepository() {}
 
+        #region Games
         public GameEntity? GetGame(int gameId)
         {
             using (var _db = new PokerPuzzleContext())
@@ -44,19 +43,58 @@ namespace PokerPuzzleData.DB.Repository
                     .FirstOrDefault();
             }
         }
+        #endregion
 
-        public List<GameEntity> GetFavoriteGames() {
+        #region GameSummaries
+        public IList<GameSummaryDTO> GetGameSummaryPage(int pageSize, int pageIndex, BoardTexture filterCriteria)
+        {
             using (var _db = new PokerPuzzleContext())
             {
-                return _db.Games
-                    .Include(g => g.Players)
-                    .Include(g => g.Actions)
-                    .Include(g => g.CommunityCards)
-                    .Where(g => g.isFavorite).ToList();
+                var GameSummariesQuery = _getFilteredGameSummary(filterCriteria, _db);
+                return GameSummariesQuery.Skip(pageSize * pageIndex).Take(pageSize).ToList();
             }
         }
 
-        private IEnumerable<GameSummaryDTO> _filterGameSummary(IEnumerable<GameEntity> games) {
+        public int GetGameSummaryCount(BoardTexture filterCriteria) {
+            using (var _db = new PokerPuzzleContext())
+            {
+                return _getFilteredGameSummary(filterCriteria, _db).Count();
+            }
+        }
+
+        private IQueryable<GameSummaryDTO> _getFilteredGameSummary(BoardTexture filterCriteria, PokerPuzzleContext _db) {
+            var GameQuery = _db.Games.AsNoTracking().Where(g => (g.BoardTexture & filterCriteria) == filterCriteria);
+            var GameSummariesQuery = _filterGameSummary(GameQuery);
+            return GameSummariesQuery;
+        }
+
+        public IList<GameSummaryDTO> GetGameSummaries(List<int> ids)
+        {
+            using (var _db = new PokerPuzzleContext())
+            {
+                var favoriteGames = _db.Games
+                    .Include(g => g.CommunityCards)
+                    .Include(g => g.Players)
+                    .Include(g => g.Actions)
+                    .Include(g => g.GameComment)
+                    .Where(g => ids.Contains(g.GameId));
+                return _filterGameSummary(favoriteGames).ToList();
+            }
+        }
+
+        private GameSummaryDTO GetGameSummary(int id)
+        {
+            using (var _db = new PokerPuzzleContext())
+            {
+                var game = _db.Games
+                    .Include(g => g.CommunityCards)
+                    .Include(g => g.Players)
+                    .Include(g => g.Actions)
+                    .Where(g => g.GameId == id);
+                return _filterGameSummary(game).FirstOrDefault();
+            }
+        }
+        private IQueryable<GameSummaryDTO> _filterGameSummary(IQueryable<GameEntity> games) {
             return games.Select(g => new GameSummaryDTO(
                     gameId: g.GameId,
                     playerCount: g.Players.Count,
@@ -72,37 +110,13 @@ namespace PokerPuzzleData.DB.Repository
                         CardHelper.fromCodeToEnum(g.CommunityCards.Turn),
                         CardHelper.fromCodeToEnum(g.CommunityCards.River)
                     },
-                    isConnectedFlop: false, // TODO - Implement helper function
-                    isPairedFlop: false, // TODO
-                    g.GameComment?.Text
+                    boardTexture: g.BoardTexture,
+                    comment: g.GameComment != null ? g.GameComment.Text : string.Empty
                 ));
         }
+        #endregion
 
-        public IList<GameSummaryDTO> GetGameSummaries(List<int> ids) {
-            using (var _db = new PokerPuzzleContext())
-            {
-                var favoriteGames = _db.Games
-                    .Include(g => g.CommunityCards)
-                    .Include(g => g.Players)
-                    .Include(g => g.Actions)
-                    .Include(g => g.GameComment)
-                    .Where(g => ids.Contains(g.GameId));
-                return _filterGameSummary(favoriteGames).ToList();
-            }
-        }
-
-        public GameSummaryDTO GetGameSummary(int id) {
-            using (var _db = new PokerPuzzleContext())
-            {
-                var game = _db.Games
-                    .Include(g => g.CommunityCards)
-                    .Include(g => g.Players)
-                    .Include(g => g.Actions)
-                    .Where(g => g.GameId == id);
-                return _filterGameSummary(game).FirstOrDefault();
-            }
-        }
-
+        #region Comment
         public void updateComment(int gameId, string content) {
             using (var _db = new PokerPuzzleContext())
             {
@@ -118,6 +132,20 @@ namespace PokerPuzzleData.DB.Repository
                 _db.SaveChanges();
             }
         }
+        #endregion
+
+        #region FavoriteGames
+        public List<GameEntity> GetFavoriteGames()
+        {
+            using (var _db = new PokerPuzzleContext())
+            {
+                return _db.Games
+                    .Include(g => g.Players)
+                    .Include(g => g.Actions)
+                    .Include(g => g.CommunityCards)
+                    .Where(g => g.isFavorite).ToList();
+            }
+        }
 
         public void setFavorite(int gameId, bool isFavorite)
         {
@@ -130,7 +158,9 @@ namespace PokerPuzzleData.DB.Repository
                 _db.SaveChanges();
             }
         }
+        #endregion
 
+        #region Other
         public void DeleteDatabase()
         {
             using var context = new PokerPuzzleContext();
@@ -143,5 +173,6 @@ namespace PokerPuzzleData.DB.Repository
             if (File.Exists(dbPath))
                 File.Delete(dbPath);
         }
+        #endregion
     }
 }

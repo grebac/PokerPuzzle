@@ -6,13 +6,20 @@ namespace PokerPuzzleData.Service
 {
     public class ImportProgress
     {
-        public int Processed {  get; }
-        public int Total { get; }
 
-        public ImportProgress(int processed, int total) 
-        { 
-            Processed = processed; 
-            Total = total; 
+        public int Processed { get; }
+        public int Total { get; }
+        public ImportPhaseEnum Phase { get; }
+
+        public ImportProgress(int processed, int total, ImportPhaseEnum phase)
+        {
+            Processed = processed;
+            Total = total;
+            Phase = phase;
         }
+    }
+    public enum ImportPhaseEnum {
+        ImportGames,
+        AnalayseGames
     }
 }

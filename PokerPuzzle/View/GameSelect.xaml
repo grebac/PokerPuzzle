@@ -1,0 +1,180 @@
+﻿<Window x:Class="PokerPuzzle.View.GameSelect"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:PokerPuzzle.View"
+        xmlns:VM="clr-namespace:PokerPuzzle.VM"
+        xmlns:Converter="clr-namespace:PokerPuzzle.View.Converters"
+        mc:Ignorable="d"
+        Title="GameSelect" Height="860" Width="1200">
+
+    <d:Window.DataContext>
+        <VM:GameSelectionVM/>
+    </d:Window.DataContext>
+    <Window.Resources>
+        <Converter:CardEnumToImageConverter x:Key="EnumToImage"/>
+    </Window.Resources>
+    
+    <Grid Margin="12">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="280"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- ================= FILTERS ================= -->
+        <ScrollViewer Grid.Column="0" VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+
+                <!-- FLOP TEXTURE -->
+                <GroupBox Header="Flop Texture" Margin="0 0 0 12">
+                    <StackPanel>
+
+                        <TextBlock Text="Height" FontWeight="SemiBold" Margin="0 6"/>
+                        <CheckBox Content="High"
+                              IsChecked="{Binding IsHighFlopSelected}"/>
+                        <CheckBox Content="Middle"
+                              IsChecked="{Binding IsMiddleFlopSelected}"/>
+                        <CheckBox Content="Low"
+                              IsChecked="{Binding IsLowFlopSelected}"/>
+
+                        <Separator Margin="0 8"/>
+
+                        <TextBlock Text="Structure" FontWeight="SemiBold" Margin="0 6"/>
+                        <CheckBox Content="Connected"
+                              IsChecked="{Binding IsConnectedFlopSelected}"/>
+                        <CheckBox Content="Wet"
+                              IsChecked="{Binding IsWetFlopSelected}"/>
+                        <CheckBox Content="Dry"
+                              IsChecked="{Binding IsDryFlopSelected}"/>
+
+                        <Separator Margin="0 8"/>
+
+                        <TextBlock Text="Suits" FontWeight="SemiBold" Margin="0 6"/>
+                        <CheckBox Content="Rainbow"
+                              IsChecked="{Binding IsRainbowFlopSelected}"/>
+                        <CheckBox Content="Two-tone"
+                              IsChecked="{Binding IsDuoFlopSelected}"/>
+                        <CheckBox Content="Monotone"
+                              IsChecked="{Binding IsMonoFlopSelected}"/>
+
+                    </StackPanel>
+                </GroupBox>
+
+                <!-- SHOWDOWN THREATS -->
+                <GroupBox Header="Showdown Threats">
+                    <StackPanel>
+                        <CheckBox Content="Flush possible"
+                              IsChecked="{Binding IsFlushThreatSelected}"/>
+                        <CheckBox Content="Straight possible"
+                              IsChecked="{Binding IsStraightThreatSelected}"/>
+                        <CheckBox Content="Set / Full / Quads possible"
+                              IsChecked="{Binding IsSetThreatSelected}"/>
+                    </StackPanel>
+                </GroupBox>
+
+                <Button Content="Apply filters"
+                    Margin="0 12 0 0"
+                    Command="{Binding ApplyFiltersCommand}"/>
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- ================= RESULTS ================= -->
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Text="{Binding MatchCount, StringFormat='{}{0} Matching Games'}" FontWeight="SemiBold" Margin="0 0 0 8"/>
+
+            <ListView Grid.Row="1" ItemsSource="{Binding FilteredGames}" SelectedItem="{Binding SelectedGame}">
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="ListViewItem">
+                        <Setter Property="HorizontalContentAlignment" Value="Center" />
+                        <EventSetter Event="MouseDoubleClick" Handler="OnItemDoubleClick"/>
+                    </Style>
+                </ListView.ItemContainerStyle>
+                <ListView.View>
+                    <GridView>
+
+                        <!-- Game ID -->
+                        <GridViewColumn Header="Game"
+                            Width="60"
+                            DisplayMemberBinding="{Binding GameId}"/>
+
+                        <!-- Flop cards -->
+                        <GridViewColumn Header="Community Cards" Width="500">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <ItemsControl ItemsSource="{Binding FlopCards}">
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <StackPanel Orientation="Horizontal"/>
+                                            </ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <Image Width="80"
+                                                   Height="120"
+                                                   Margin="2"
+                                                   Source="{Binding Converter={StaticResource EnumToImage}}"
+                                                   SnapsToDevicePixels="True"
+                                                   UseLayoutRounding="True"
+                                                   RenderOptions.BitmapScalingMode="HighQuality"/>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+
+                        <!-- Final pot -->
+                        <GridViewColumn Header="Pot" Width="60" DisplayMemberBinding="{Binding FinalPotSize}" />
+
+                        <!-- Players -->
+                        <GridViewColumn Header="Players" Width="60" DisplayMemberBinding="{Binding PlayerCount}" />
+
+                        <!-- Comment (future, eats remaining space) -->
+                        <GridViewColumn Header="Comment" Width="200">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBox Text="{Binding Comment, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"
+                                       AcceptsReturn="True"
+                                       TextWrapping="Wrap"
+                                       Foreground="Gray"
+                                       Background="Transparent"
+                                       BorderThickness="0"
+                                       MinHeight="100"
+                                       MinWidth="300"
+                                       TextAlignment="Center"
+                                       VerticalContentAlignment="Center"/>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+
+                    </GridView>
+                </ListView.View>
+            </ListView>
+            
+            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10" VerticalAlignment="Center">
+
+                            <!-- Previous -->
+                            <Button Content="◀" Width="40" Margin="5,0" Command="{Binding PreviousPageCommand}"/>
+
+                            <!-- Page indicator -->
+                            <TextBlock Text="{Binding PageNumber}" FontWeight="Bold" Margin="5,0" VerticalAlignment="Center" />
+
+                            <TextBlock Text="/" Margin="3,0" VerticalAlignment="Center" />
+
+                            <TextBlock Text="{Binding MaxPage}" Margin="5,0" VerticalAlignment="Center" />
+
+                            <!-- Next -->
+                            <Button Content="▶" Width="40" Margin="5,0" Command="{Binding NextPageCommand}"/>
+            </StackPanel>
+        </Grid>
+
+    </Grid>
+</Window>

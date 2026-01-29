@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PokerPuzzleData.Enum;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -17,8 +18,11 @@ namespace PokerPuzzleData.DTO
 
         public List<CardsEnum> CommunityCards { get; }
 
-        public bool IsConnectedFlop { get; }
-        public bool IsPairedFlop { get; }
+        public BoardTexture BoardTexture { get; init; }
+
+        //public bool IsHighFlop => BoardTexture.HasFlag(BoardTexture.HighFlop);
+        //public bool IsWet => BoardTexture.HasFlag(BoardTexture.WetFlop);
+        //public bool IsConnected => BoardTexture.HasFlag(BoardTexture.ConnectedFlop);
 
         public string? Comment { get; set; }
 
@@ -30,8 +34,7 @@ namespace PokerPuzzleData.DTO
             bool reachedTurn,
             bool reachedRiver,
             List<CardsEnum> communityCards,
-            bool isConnectedFlop,
-            bool isPairedFlop,
+            BoardTexture boardTexture,
             string? comment)
         {
             GameId = gameId;
@@ -41,8 +44,7 @@ namespace PokerPuzzleData.DTO
             ReachedTurn = reachedTurn;
             ReachedRiver = reachedRiver;
             CommunityCards = communityCards;
-            IsConnectedFlop = isConnectedFlop;
-            IsPairedFlop = isPairedFlop;
+            BoardTexture = boardTexture;
             Comment = comment;
         }
     }

@@ -31,6 +31,25 @@
                 </Menu>
             </Border>
 
+            <!-- Favorite Games -->
+            <Border Background="#FF2E2E2E" BorderBrush="#FFB88600" BorderThickness="1" CornerRadius="6" Canvas.Left="90" Canvas.Top="5" Height="30" Width="50">
+                <Menu Background="Transparent" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <MenuItem Header="★" Foreground="Gold" FontSize="22" Padding="0" VerticalContentAlignment="Center">
+                        <MenuItem Header="Add to Favorites" Command="{Binding AddToFavorties}" Background="#2D2D2D" Foreground="White"/>
+                        <MenuItem Header="My Favorites" Command="{Binding OpenFavorites}" Background="#2D2D2D" Foreground="White"/>
+                    </MenuItem>
+                </Menu>
+            </Border>
+
+            <!--Game Select-->
+            <Border Background="#FF2E2E2E" BorderBrush="#FFB88600" BorderThickness="1" CornerRadius="6" Canvas.Left="145" Canvas.Top="5" Height="30" Width="50">
+                <Border.InputBindings>
+                    <MouseBinding MouseAction="LeftClick"
+                      Command="{Binding OpenGameSelect}" />
+                </Border.InputBindings>
+                <TextBlock Text="🔍" FontSize="18" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Border>
+
             <!--Random Game Accessor-->
             <Border Background="#FF2E2E2E" BorderBrush="#FFB88600" BorderThickness="1" CornerRadius="6" Padding="12,8" HorizontalAlignment="Center" Canvas.Left="1568" Canvas.Top="85" VerticalAlignment="Top" Height="58">
                 <Button Content="Random Game" Background="#FF2E2E2E" Foreground="White" FontSize="18" FontWeight="SemiBold" BorderBrush="#FF444444" BorderThickness="1" Padding="12,8"  Command="{Binding RandomGame}" HorizontalAlignment="Center" VerticalAlignment="Top"/>
@@ -41,16 +60,6 @@
                     <TextBlock x:Name="GameIdTextBlock" Foreground="White" FontSize="18" FontWeight="Bold" Text="{Binding GameId}" HorizontalAlignment="Right"/>
                 </StackPanel>
             </Border>
-
-            <!-- Favorite Games -->
-            <Border Background="#FF2E2E2E" BorderBrush="#FFB88600" BorderThickness="1" CornerRadius="6" Canvas.Left="90" Canvas.Top="5" Height="30" Width="50">
-                <Menu Background="Transparent" HorizontalAlignment="Center" VerticalAlignment="Center">
-                    <MenuItem Header="★" Foreground="Gold" FontSize="18" Padding="0" VerticalContentAlignment="Center">
-                        <MenuItem Header="Add to Favorites" Command="{Binding AddToFavorties}" Background="#2D2D2D" Foreground="White"/>
-                        <MenuItem Header="My Favorites" Command="{Binding OpenFavorites}" Background="#2D2D2D" Foreground="White"/>
-                    </MenuItem>
-                </Menu>
-            </Border>
             
             <!--COMMUNITY CARDS-->
             <MyView:CommunityCards Canvas.Top="470" Canvas.Left="370" DataContext="{Binding CommunityCards}"/>
@@ -58,9 +67,9 @@
             <!--PLAYER HANDS-->
             <MyView:PlayerHand Canvas.Left="1490" Canvas.Top="299" DataContext="{Binding Players[0]}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
             <MyView:PlayerHand Canvas.Left="1490" Canvas.Top="675" HorizontalAlignment="Left" VerticalAlignment="Center" DataContext="{Binding Players[1]}"/>
-            <MyView:PlayerHand Canvas.Left="1145" Canvas.Top="854" HorizontalAlignment="Left" VerticalAlignment="Top" DataContext="{Binding Players[2]}"/>
-            <MyView:PlayerHand Canvas.Top="854" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="797" DataContext="{Binding Players[3]}"/>
-            <MyView:PlayerHand Canvas.Left="421" Canvas.Top="854" HorizontalAlignment="Left" VerticalAlignment="Top" DataContext="{Binding Players[4]}"/>
+            <MyView:PlayerHand Canvas.Left="1145" Canvas.Top="820" HorizontalAlignment="Left" VerticalAlignment="Top" DataContext="{Binding Players[2]}" Cursor=""/>
+            <MyView:PlayerHand Canvas.Left="797" Canvas.Top="820" HorizontalAlignment="Left" VerticalAlignment="Top" DataContext="{Binding Players[3]}"/>
+            <MyView:PlayerHand Canvas.Left="421" Canvas.Top="820" HorizontalAlignment="Left" VerticalAlignment="Top" DataContext="{Binding Players[4]}"/>
             <MyView:PlayerHand Canvas.Left="65" Canvas.Top="668" HorizontalAlignment="Center" VerticalAlignment="Top" DataContext="{Binding Players[5]}"/>
             <MyView:PlayerHand Canvas.Left="70" Canvas.Top="299" HorizontalAlignment="Left" VerticalAlignment="Top" DataContext="{Binding Players[6]}"/>
             <MyView:PlayerHand Canvas.Left="421" Canvas.Top="10" HorizontalAlignment="Left" VerticalAlignment="Center" DataContext="{Binding Players[7]}"/>

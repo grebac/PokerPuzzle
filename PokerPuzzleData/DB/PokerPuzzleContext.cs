@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PokerPuzzleData.DB.Entity;
+using PokerPuzzleData.Enum;
 using System;
 using System.Collections.Generic;
 using System.Reflection.Emit;
@@ -36,6 +37,9 @@ namespace PokerPuzzleData.DB
 
                 entity.Property(g => g.isFavorite)
                       .HasDefaultValue(false);
+
+                entity.Property(g => g.BoardTexture)
+                      .HasDefaultValue(BoardTexture.None);
             });
 
             // Player (composite key)

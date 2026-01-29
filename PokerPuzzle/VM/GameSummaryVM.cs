@@ -1,5 +1,6 @@
 ﻿using PokerPuzzleData.DB.Repository;
 using PokerPuzzleData.DTO;
+using PokerPuzzleData.Enum;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -31,7 +32,7 @@ namespace PokerPuzzle.VM
             ReachedTurn ? "Turn" :
             ReachedFlop ? "Flop" :
             "Preflop";
-
+        public BoardTexture BoardTexture { get; }
         
         public ObservableCollection<CardsEnum> FlopCards { get; }
 
@@ -47,6 +48,8 @@ namespace PokerPuzzle.VM
             ReachedRiver = dto.ReachedRiver;
 
             FlopCards = new(dto.CommunityCards);
+
+            BoardTexture = dto.BoardTexture;
         }
 
         private bool ReachedFlop;

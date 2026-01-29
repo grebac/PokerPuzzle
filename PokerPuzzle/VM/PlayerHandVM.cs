@@ -11,7 +11,7 @@ namespace PokerPuzzle.VM
         #region attributes
         // Datas
         private string _playerName = "default";
-        private decimal _chipCount;
+        private double _chipCount;
         private bool _areCardsVisible;
         private CardsEnum _card1 = CardsEnum.CardBack;
         private CardsEnum _card2 = CardsEnum.CardBack;
@@ -55,7 +55,7 @@ namespace PokerPuzzle.VM
             }
         }
 
-        public decimal ChipCount
+        public double ChipCount
         {
             get => _chipCount;
             set
@@ -111,7 +111,7 @@ namespace PokerPuzzle.VM
         #region constructors
         public PlayerHandVM() : this(100, CardsEnum.AceOfClubs, CardsEnum.AceOfDiamonds, -1, "default") { }
 
-        public PlayerHandVM(decimal chipCount, CardsEnum card1, CardsEnum card2, int position, string playerName, bool areCardsVisible = false)
+        public PlayerHandVM(double chipCount, CardsEnum card1, CardsEnum card2, int position, string playerName, bool areCardsVisible = false)
         {
             ChipCount = chipCount;
             AreCardsVisible = areCardsVisible;

@@ -222,54 +222,5 @@ namespace PokerPuzzleData.DTO
 
             return attr.Code;
         }
-
-        // Returns an emoji based representation of the card
-        public static string ToUnicode(CardsEnum card)
-        {
-            if (card == CardsEnum.CardBack)
-                return "🂠";
-
-            string code = FromEnumToCode(card);
-            return ToUnicode(code);
-        }
-
-        public static string ToUnicode(string card)
-        {
-            if (string.IsNullOrWhiteSpace(card) || card.Length < 2)
-                return string.Empty;
-
-            char rank = card[0];
-            char suit = card[1];
-
-            int suitBase = suit switch
-            {
-                's' => 0x1F0A0,
-                'h' => 0x1F0B0,
-                'd' => 0x1F0C0,
-                'c' => 0x1F0D0,
-                _ => throw new ArgumentException($"Unknown suit: {suit}")
-            };
-
-            int rankOffset = rank switch
-            {
-                'A' => 0x1,
-                '2' => 0x2,
-                '3' => 0x3,
-                '4' => 0x4,
-                '5' => 0x5,
-                '6' => 0x6,
-                '7' => 0x7,
-                '8' => 0x8,
-                '9' => 0x9,
-                'T' => 0xA,
-                'J' => 0xB,
-                'Q' => 0xD,
-                'K' => 0xE,
-                _ => throw new ArgumentException($"Unknown rank: {rank}")
-            };
-
-            int codePoint = suitBase + rankOffset;
-            return char.ConvertFromUtf32(codePoint);
-        }
     }
 }

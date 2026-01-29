@@ -57,6 +57,7 @@ namespace PokerPuzzle.VM
         public ICommand RevealAll {  get; }
         public ICommand DeleteDatabase { get; }
         public ICommand OpenImportDatabase { get; }
+        public ICommand OpenGameSelect { get; }
         #endregion
 
         public GameVM() {
@@ -76,6 +77,7 @@ namespace PokerPuzzle.VM
             RevealAll = new RelayCommand<bool>(SetAllCardsVisibility);
             DeleteDatabase = new RelayCommand(DeleteDatabaseFunction);
             OpenImportDatabase = new RelayCommand(OpenImportDatabaseFunction);
+            OpenGameSelect = new RelayCommand(OpenGameSelectMethod);
             Players = new ObservableCollection<PlayerHandVM>();
             _gameRepository = new GameRepository();
 
@@ -288,6 +290,20 @@ namespace PokerPuzzle.VM
             databaseSetup.ShowDialog();
         }
         #endregion
+
+        private void OpenGameSelectMethod()
+        {
+            var gameSelectVM = new GameSelectionVM();
+            var gameSelectWindow = new GameSelect(gameSelectVM);
+
+            gameSelectWindow.ShowDialog();
+
+            var selectedGame = gameSelectVM.SelectedGame;
+            if (selectedGame != null)
+            {
+                SetupGame(selectedGame.GameId);
+            }
+        }
 
         #region Notify
         public event PropertyChangedEventHandler? PropertyChanged;

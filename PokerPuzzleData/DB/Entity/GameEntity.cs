@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PokerPuzzleData.Enum;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -14,6 +15,7 @@ namespace PokerPuzzleData.DB.Entity
         public bool HasFlop { get; set; }
         public bool HasShowdown { get; set; }
         public required string Source { get; set; }
+        public BoardTexture BoardTexture { get; set; }
 
         public ICollection<PlayerEntity> Players { get; set; } = new List<PlayerEntity>();
         public ICollection<ActionEntity> Actions { get; set; } = new List<ActionEntity>();

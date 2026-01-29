@@ -44,7 +44,7 @@
             </Setter>
         </Style>
     </UserControl.Resources>
-    
+
     <Canvas Visibility="{Binding IsHidden}" d:Visibility="Visible">
         <Image x:Name="Card1" Height="210" Width="149" Canvas.Left="77" Canvas.Top="65" Source="{Binding Card1Path, Mode=OneWay}" d:Source="pack://application:,,,/Ressources/Cards/10_of_clubs.png"/>
         <Image x:Name="Card2" Height="210" Width="148" Canvas.Left="144" Canvas.Top="100" Source="{Binding Card2Path, Mode=OneWay}" d:Source="pack://application:,,,/Ressources/Cards/10_of_diamonds.png"/>
@@ -78,5 +78,8 @@
                 <ScaleTransform ScaleX="2" ScaleY="2" />
             </ToggleButton.LayoutTransform>
         </ToggleButton>
+
+        <!--Can't add this feature because this represents only the initial stack. If this value doesn't change while bets are happening, it will confuse the user-->
+        <!--<TextBlock x:Name="PlayerStackText" Canvas.Left="126" Canvas.Right="0" Canvas.Top="347" Foreground="#FFE0E0E0" FontSize="18" FontWeight="SemiBold" FontFamily="Segoe UI" HorizontalAlignment="Left" Text="{Binding ChipCount, StringFormat={}{0} $}" d:Text="100 Chips" Canvas.ZIndex="10" VerticalAlignment="Top"/>-->
     </Canvas>
 </UserControl>

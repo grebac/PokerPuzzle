@@ -7,10 +7,10 @@ namespace PokerPuzzleData.DTO
     {
         public int GameId { get; set; }
         public bool IsFavorite { get; set; }
-        public Dictionary<string, PlayerHandDTO> Players { get; set; } // TODO - Remove the string it is an int. Currently I quick fixed it by using GameId.toString()
+        public Dictionary<int, PlayerHandDTO> Players { get; set; }
         public CommunityDTO Community { get; set; }
         public List<GameActionDTO> GameActions { get; set; }
-        public PokerGameDTO(int gameId, bool isFavorite, CommunityDTO community, Dictionary<string, PlayerHandDTO> players, List<GameActionDTO> actions) {
+        public PokerGameDTO(int gameId, bool isFavorite, CommunityDTO community, Dictionary<int, PlayerHandDTO> players, List<GameActionDTO> actions) {
             GameId = gameId;
             IsFavorite = isFavorite;
             Community = community;
@@ -24,7 +24,7 @@ namespace PokerPuzzleData.DTO
                 CommunityDTO.FromEntity(entity.CommunityCards),
                    entity.Players
                     .ToDictionary(
-                        p => p.Position.ToString(),
+                        p => p.Position,
                         PlayerHandDTO.FromEntity
                     ),
                     entity.Actions

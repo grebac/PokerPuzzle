@@ -94,8 +94,15 @@ namespace PokerPuzzle.VM
                 {
                     ProgressMaximum = p.Total;
                     ProgressValue = p.Processed;
-                    StatusMessage =
-                        $"Importing hands: {p.Processed:N0} / {p.Total:N0}";
+                    
+                    string phaseText = p.Phase switch
+                    {
+                        ImportPhaseEnum.ImportGames => "Importing hands",
+                        ImportPhaseEnum.AnalayseGames => "Analyzing hands",
+                        _ => "Working…"
+                    };
+
+                    StatusMessage = $"{phaseText}: {p.Processed:N0} / {p.Total:N0}";
                 });
 
                 await Task.Run(() =>

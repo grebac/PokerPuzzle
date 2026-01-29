@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PokerPuzzleData.DB;
 
@@ -10,9 +11,11 @@ using PokerPuzzleData.DB;
 namespace PokerPuzzleData.Migrations
 {
     [DbContext(typeof(PokerPuzzleContext))]
-    partial class PokerPuzzleContextModelSnapshot : ModelSnapshot
+    [Migration("20260128154705_AddedPlayerStack")]
+    partial class AddedPlayerStack
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.1");
@@ -105,11 +108,6 @@ namespace PokerPuzzleData.Migrations
                     b.Property<int>("GameId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
-
-                    b.Property<int>("BoardTexture")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER")
-                        .HasDefaultValue(0);
 
                     b.Property<string>("ExternalGameId")
                         .HasColumnType("TEXT");
